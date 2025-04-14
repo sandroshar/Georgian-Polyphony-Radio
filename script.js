@@ -1,5 +1,5 @@
 // Georgian Polyphony Player - Main Script
-// Updated with improved track loader and fixed progress bar functionality
+// Updated with improved track loader and error handling
 
 // DOM Elements
 const audioPlayer = document.getElementById('audio-player');
@@ -32,6 +32,8 @@ let isLoading = true;
 let searchResults = null;
 let isSearchActive = false;
 let isDraggingProgress = false;
+let consecutiveErrors = 0; // Count consecutive errors to prevent infinite loops
+const MAX_CONSECUTIVE_ERRORS = 5; // Maximum number of consecutive errors to try before stopping
 
 // Create search results container
 function createSearchResultsContainer() {
@@ -71,9 +73,17 @@ function setProgress() {
 // Play/Pause functionality
 function togglePlay() {
     if (audioPlayer.paused) {
-        audioPlayer.play();
-        isPlaying = true;
-        updatePlayPauseIcon();
+        audioPlayer.play()
+            .then(() => {
+                isPlaying = true;
+                updatePlayPauseIcon();
+            })
+            .catch(error => {
+                console.error('Error playing audio:', error);
+                isPlaying = false;
+                updatePlayPauseIcon();
+                showErrorMessage('Unable to play this track. You may need to interact with the page first.');
+            });
     } else {
         audioPlayer.pause();
         isPlaying = false;
@@ -130,6 +140,29 @@ function updateMuteIcon() {
     }
 }
 
+// Display error message below the player
+function showErrorMessage(message, duration = 5000) {
+    // Remove any existing error messages
+    const existingErrors = document.querySelectorAll('.audio-error');
+    existingErrors.forEach(el => el.remove());
+    
+    // Create error message element
+    const errorElement = document.createElement('div');
+    errorElement.className = 'audio-error';
+    errorElement.textContent = message;
+    
+    // Add to player container
+    const playerContainer = document.querySelector('.player-container');
+    playerContainer.appendChild(errorElement);
+    
+    // Auto-remove after duration
+    setTimeout(() => {
+        if (errorElement.parentNode) {
+            errorElement.remove();
+        }
+    }, duration);
+}
+
 // Load and play a track
 function loadTrack(index) {
     if (tracks.length === 0) return;
@@ -143,6 +176,9 @@ function loadTrack(index) {
         }
     }
     
+    // Reset consecutive errors counter
+    consecutiveErrors = 0;
+    
     currentTrackIndex = index;
     setLoading(true);
     
@@ -152,13 +188,19 @@ function loadTrack(index) {
     const audioSource = track.audioUrl;
     if (!audioSource) {
         console.error('Track has no audio URL:', track);
-        skipToNextTrack();
+        showErrorMessage('This track is missing its audio source.');
+        setLoading(false);
         return;
     }
     
     // Log the audio path to help with debugging
     console.log(`Attempting to load audio from: ${audioSource}`);
     
+    // Clear any previous audio source
+    audioPlayer.removeAttribute('src');
+    audioPlayer.load();
+    
+    // Set new audio source
     audioPlayer.src = audioSource;
     
     // Update track information
@@ -185,44 +227,82 @@ function loadTrack(index) {
     // Enable/disable navigation buttons
     updateNavigationButtons();
     
-    // Load and play the track
-    audioPlayer.load();
-    
-    // Add error handling for audio loading
-    audioPlayer.onerror = function() {
+    // Set up error handling
+    audioPlayer.onerror = function(e) {
         console.error(`Error loading audio file: ${audioSource}`);
         console.error(`Audio error code: ${audioPlayer.error ? audioPlayer.error.code : 'unknown'}`);
+        
+        // Record this error in the track loader
+        if (trackLoader && typeof trackLoader.recordTrackError === 'function') {
+            trackLoader.recordTrackError(track);
+        }
+        
         setLoading(false);
         
-        // Silently try next track instead of showing error message
-        skipToNextTrack();
+        // Increment the consecutive errors counter
+        consecutiveErrors++;
+        
+        if (consecutiveErrors >= MAX_CONSECUTIVE_ERRORS) {
+            showErrorMessage('Multiple tracks failed to load. Please try again later or refresh the page.');
+            isPlaying = false;
+            updatePlayPauseIcon();
+        } else {
+            showErrorMessage('Could not load this track. Skipping to next track...');
+            setTimeout(() => skipToNextTrack(), 1500);
+        }
     };
     
     // Add event listener to detect when the track is ready to play
-    audioPlayer.addEventListener('canplay', onTrackReady, { once: true });
-    
-    // Add a timeout in case the track doesn't load
-    const loadTimeout = setTimeout(() => {
-        console.warn('Track loading timed out, trying next track');
-        audioPlayer.removeEventListener('canplay', onTrackReady);
-        skipToNextTrack();
-    }, 15000); // 15 second timeout
-    
-    function onTrackReady() {
-        clearTimeout(loadTimeout);
+    audioPlayer.oncanplay = function() {
         setLoading(false);
         
         // Update duration display
-        durationDisplay.textContent = formatTime(audioPlayer.duration);
+        if (audioPlayer.duration) {
+            durationDisplay.textContent = formatTime(audioPlayer.duration);
+        }
         
+        // Try to play automatically if we're in playing state
         if (isPlaying) {
             audioPlayer.play().catch(error => {
-                console.error('Error playing track:', error);
-                isPlaying = false;
-                updatePlayPauseIcon();
+                console.error('Error auto-playing track:', error);
+                // Don't change isPlaying state - let user try manual play
             });
         }
-    }
+    };
+    
+    // Add a timeout in case the track doesn't load
+    const loadTimeout = setTimeout(() => {
+        // Only handle timeout if we're still loading
+        if (isLoading) {
+            console.warn('Track loading timed out');
+            
+            // Record this error in the track loader
+            if (trackLoader && typeof trackLoader.recordTrackError === 'function') {
+                trackLoader.recordTrackError(track);
+            }
+            
+            setLoading(false);
+            
+            // Increment the consecutive errors counter
+            consecutiveErrors++;
+            
+            if (consecutiveErrors >= MAX_CONSECUTIVE_ERRORS) {
+                showErrorMessage('Multiple tracks failed to load. Please try again later or refresh the page.');
+                isPlaying = false;
+                updatePlayPauseIcon();
+            } else {
+                showErrorMessage('Track loading timed out. Skipping to next track...');
+                setTimeout(() => skipToNextTrack(), 1500);
+            }
+        }
+    }, 20000); // 20 second timeout
+    
+    // Clear timeout when loaded or on error
+    audioPlayer.addEventListener('canplay', () => clearTimeout(loadTimeout), { once: true });
+    audioPlayer.addEventListener('error', () => clearTimeout(loadTimeout), { once: true });
+    
+    // Start loading
+    audioPlayer.load();
 }
 
 // Update navigation button states
@@ -255,7 +335,13 @@ function setLoading(loading) {
 
 // Skip to next track
 function skipToNextTrack() {
-    currentTrackIndex = (currentTrackIndex + 1) % tracks.length;
+    // If we're at the end of the playlist, loop back to the first track
+    if (currentTrackIndex >= tracks.length - 1) {
+        currentTrackIndex = 0;
+    } else {
+        currentTrackIndex++;
+    }
+    
     loadTrack(currentTrackIndex);
 }
 
@@ -276,15 +362,16 @@ function playPreviousTrack() {
         
         if (!audioSource) {
             console.error('Previous track has no audio URL:', track);
-            // If previous track is invalid, try another one
-            if (playHistory.length > 0) {
-                playPreviousTrack();
-            } else {
-                setLoading(false);
-            }
+            showErrorMessage('This track is missing its audio source.');
+            setLoading(false);
             return;
         }
         
+        // Clear any previous audio source
+        audioPlayer.removeAttribute('src');
+        audioPlayer.load();
+        
+        // Set new audio source
         audioPlayer.src = audioSource;
         
         // Update track information
@@ -309,24 +396,38 @@ function playPreviousTrack() {
         // Update navigation buttons
         updateNavigationButtons();
         
-        // Load and play the track
-        audioPlayer.load();
+        // Set up error handling
+        audioPlayer.onerror = function(e) {
+            console.error(`Error loading previous track: ${audioSource}`);
+            console.error(`Audio error code: ${audioPlayer.error ? audioPlayer.error.code : 'unknown'}`);
+            
+            // Record this error in the track loader
+            if (trackLoader && typeof trackLoader.recordTrackError === 'function') {
+                trackLoader.recordTrackError(track);
+            }
+            
+            setLoading(false);
+            showErrorMessage('Could not load the previous track.');
+        };
         
         // Add event listener to detect when the track is ready to play
-        audioPlayer.addEventListener('canplay', () => {
+        audioPlayer.oncanplay = function() {
             setLoading(false);
             
             // Update duration display
-            durationDisplay.textContent = formatTime(audioPlayer.duration);
+            if (audioPlayer.duration) {
+                durationDisplay.textContent = formatTime(audioPlayer.duration);
+            }
             
             if (isPlaying) {
                 audioPlayer.play().catch(error => {
-                    console.error('Error playing track:', error);
-                    isPlaying = false;
-                    updatePlayPauseIcon();
+                    console.error('Error auto-playing previous track:', error);
                 });
             }
-        }, { once: true });
+        };
+        
+        // Start loading
+        audioPlayer.load();
     }
 }
 
@@ -413,11 +514,11 @@ function clearSearch() {
     
     // Only reshuffle if we're returning from a search
     if (isSearchActive) {
-        // Restore original playlist and use the new collection-based shuffling
-        tracks = trackLoader.getShuffledPlaylist();
+        // Restore original playlist with filtered tracks
+        tracks = trackLoader.getFilteredShuffledPlaylist();
         isSearchActive = false;
         
-        // Load the first track of the new shuffled playlist
+        // Load the first track of the new filtered playlist
         loadTrack(0);
     }
     
@@ -441,8 +542,8 @@ async function initializeApp() {
         // Get all tracks
         originalTracks = trackLoader.getAllTracks();
         
-        // Use collection-based shuffling
-        tracks = trackLoader.getShuffledPlaylist();
+        // Use filtered collection-based shuffling to reduce errors
+        tracks = trackLoader.getFilteredShuffledPlaylist();
         
         if (tracks.length === 0) {
             showError('No tracks available');
@@ -501,6 +602,7 @@ progressSlider.addEventListener('click', function(e) {
 
 // Handle progress changes when sliding
 progressSlider.addEventListener('input', function() {
+    isDraggingProgress = true;
     // Just update the time display while sliding
     if (audioPlayer.duration) {
         currentTimeDisplay.textContent = formatTime((progressSlider.value / 100) * audioPlayer.duration);
@@ -509,17 +611,13 @@ progressSlider.addEventListener('input', function() {
 
 // Only set the actual audio position when the sliding is done
 progressSlider.addEventListener('change', function() {
+    isDraggingProgress = false;
     setProgress();
 });
 
 // Audio player event listeners
 audioPlayer.addEventListener('timeupdate', updateProgress);
 audioPlayer.addEventListener('ended', skipToNextTrack);
-audioPlayer.addEventListener('error', () => {
-    console.error('Error loading audio file:', audioPlayer.error);
-    // Silently try the next track
-    skipToNextTrack();
-});
 
 // Search when Enter key is pressed in search input
 searchInput.addEventListener('keyup', (e) => {
@@ -535,17 +633,57 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Initialize app with track loader
     initializeApp();
+    
+    // Set up click handler for iOS audio playback
+    setupIOSAudioHandling();
 });
 
-// Register a click handler on the document to help with iOS audio playback
-document.addEventListener('click', function() {
-    // This helps with iOS requiring user interaction before audio can play
-    if (audioPlayer.paused && isPlaying) {
-        audioPlayer.play().catch(error => {
-            console.error('Error playing after user interaction:', error);
-        });
+// Special handling for iOS audio playback
+function setupIOSAudioHandling() {
+    // Check if likely iOS device
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+    
+    if (isIOS) {
+        // Create notification for users
+        const iosNotice = document.createElement('div');
+        iosNotice.className = 'audio-info';
+        iosNotice.textContent = 'Tap anywhere on the page to enable audio playback';
+        iosNotice.style.backgroundColor = 'rgba(230, 194, 0, 0.2)';
+        iosNotice.style.color = '#e6c200';
+        iosNotice.style.padding = '10px';
+        iosNotice.style.borderRadius = '5px';
+        iosNotice.style.margin = '15px 0';
+        iosNotice.style.textAlign = 'center';
+        
+        const playerContainer = document.querySelector('.player-container');
+        playerContainer.parentNode.insertBefore(iosNotice, playerContainer);
+        
+        // Set up one-time click handler
+        document.addEventListener('click', function() {
+            // Create a silent audio context
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            
+            // Play a silent sound
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            gainNode.gain.value = 0; // Silent
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            oscillator.start();
+            oscillator.stop(0.001);
+            
+            // Remove the notice
+            iosNotice.remove();
+            
+            // Try to play audio if it's in playing state
+            if (isPlaying && audioPlayer.paused) {
+                audioPlayer.play().catch(error => {
+                    console.error('Error playing audio after user interaction:', error);
+                });
+            }
+        }, { once: true });
     }
-}, { once: true });
+}
 
 searchBtn.addEventListener('click', searchTracks);
 clearSearchBtn.addEventListener('click', clearSearch);
