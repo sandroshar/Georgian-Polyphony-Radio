@@ -691,7 +691,7 @@
 | col_18_track_1 | Levan Mughalashvili | Gurjaanuli Chakrulo | Mugalashvili_-_gurjaanuli_chakrulo.mp3 | Levan Mughalashvili (Kakheti)/Mugalashvili_-_gurjaanuli_chakrulo.mp3 | Levan Mughalashvili's Choir | unknown | Kakheti |
 | col_18_track_5 | Levan Mughalashvili | Kakhuri Mravaljamieri | Mugalashvili_-_kaxuri_mravaljamieri.mp3 | Levan Mughalashvili (Kakheti)/Mugalashvili_-_kaxuri_mravaljamieri.mp3 | Levan Mughalashvili's Choir | unknown | Kakheti |
 | col_18_track_2 | Levan Mughalashvili | Lale | Mugalashvili_-_Lale.mp3 | Levan Mughalashvili (Kakheti)/Mugalashvili_-_Lale.mp3 | Levan Mughalashvili's Choir | unknown | Kakheti |
-| col_18_track_3 | Levan Mughalashvili | Mayruli | Mugalashvili_-_mayruli.mp3 | Levan Mughalashvili (Kakheti)/Mugalashvili_-_mayruli.mp3 | Levan Mughalashvili's Choir | unknown | Kakheti |
+| col_18_track_3 | Levan Mughalashvili | Makruli | Mugalashvili_-_mayruli.mp3 | Levan Mughalashvili (Kakheti)/Mugalashvili_-_mayruli.mp3 | Levan Mughalashvili's Choir | unknown | Kakheti |
 | col_18_track_4 | Levan Mughalashvili | Mikvarkhar Tkbilo Kakheto | Mugalashvili_-_mikvarxar_tkbilo_kaxeto.mp3 | Levan Mughalashvili (Kakheti)/Mugalashvili_-_mikvarxar_tkbilo_kaxeto.mp3 | Levan Mughalashvili's Choir | unknown | Kakheti |
 | Track ID | Collection Name | Track Name | Filename | Filepath | Performers | Year | Region |
 |----------|-----------------|------------|----------|----------|------------|------|--------|
