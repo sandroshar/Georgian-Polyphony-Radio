@@ -122,9 +122,9 @@ class TrackLoader {
                         track.collection_id = 'unknown';
                     }
                     
-                    // Create proper audio URL with CloudFront domain
+                    // Create proper audio URL with CloudFront domain and URL encoding
                     const collectionFolder = track.filepath.split('/')[0];
-                    track.audioUrl = `${this.cloudFrontDomain}/audio/${collectionFolder}/${track.filename}`;
+                    track.audioUrl = `${this.cloudFrontDomain}/audio/${encodeURIComponent(collectionFolder)}/${encodeURIComponent(track.filename)}`;
                     
                     tracks.push(track);
                 }
@@ -142,7 +142,7 @@ class TrackLoader {
                         year: parts[4],
                         region: this.formatRegion(parts[5]),
                         collection_id: 'col_10',
-                        audioUrl: `${this.cloudFrontDomain}/audio/გრიმო/${parts[2]}`
+                        audioUrl: `${this.cloudFrontDomain}/audio/${encodeURIComponent('გრიმო')}/${encodeURIComponent(parts[2])}`
                     };
                     tracks.push(track);
                 }
