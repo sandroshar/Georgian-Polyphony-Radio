@@ -8,6 +8,7 @@ class TrackLoader {
         this.collectionTracks = {};
         this.isInitialized = false;
         this.cloudFrontDomain = "https://d3mbcwzrk18stt.cloudfront.net";
+        this.errorCount = {}; // Track errors by collection
     }
 
     // Initialize by loading the database
@@ -123,8 +124,23 @@ class TrackLoader {
                     }
                     
                     // Create proper audio URL with CloudFront domain and URL encoding
-                    const collectionFolder = track.filepath.split('/')[0];
-                    track.audioUrl = `${this.cloudFrontDomain}/audio/${encodeURIComponent(collectionFolder)}/${encodeURIComponent(track.filename)}`;
+                    // Use a more robust URL construction approach
+                    if (track.filepath && track.filename) {
+                        const pathParts = track.filepath.split('/');
+                        const collectionFolder = pathParts[0];
+                        
+                        // For collection folders: use folder + '/' + filename
+                        // Otherwise, use full filepath as is
+                        const audioPath = pathParts.length > 1 ? 
+                            `${encodeURIComponent(collectionFolder)}/${encodeURIComponent(track.filename)}` : 
+                            encodeURIComponent(track.filepath);
+                            
+                        track.audioUrl = `${this.cloudFrontDomain}/audio/${audioPath}`;
+                    } else {
+                        // Skip tracks with missing filepath or filename
+                        console.warn(`Skipping track with missing filepath or filename: ${track.id} - ${track.title}`);
+                        continue;
+                    }
                     
                     tracks.push(track);
                 }
@@ -240,6 +256,22 @@ class TrackLoader {
         return this.tracks;
     }
     
+    // Record an error for a track
+    recordTrackError(track) {
+        if (!track || !track.collection_id) return;
+        
+        // Initialize error count for this collection if not exists
+        if (!this.errorCount[track.collection_id]) {
+            this.errorCount[track.collection_id] = 0;
+        }
+        
+        // Increment error count
+        this.errorCount[track.collection_id]++;
+        
+        // Log for debugging
+        console.warn(`Track error recorded for collection ${track.collection_id} (Total: ${this.errorCount[track.collection_id]})`);
+    }
+    
     // Get a balanced playlist with proper representation of all collections
     // Never plays more than one track from the same collection in succession
     getShuffledPlaylist() {
@@ -253,6 +285,102 @@ class TrackLoader {
         
         // Shuffle the collection order
         const shuffledCollections = this.shuffleArray([...collectionIds]);
+        
+        // Shuffle the tracks within each collection
+        const shuffledCollectionTracks = {};
+        shuffledCollections.forEach(collectionId => {
+            shuffledCollectionTracks[collectionId] = this.shuffleArray([...this.collectionTracks[collectionId]]);
+        });
+        
+        // Create a new array with strictly alternating tracks from each collection
+        const playlist = [];
+        
+        // Keep track of position in each collection
+        const positions = {};
+        shuffledCollections.forEach(collectionId => {
+            positions[collectionId] = 0;
+        });
+        
+        // Collections still having tracks to contribute
+        let remainingCollections = [...shuffledCollections];
+        
+        // Strictly alternate between collections
+        // This ensures we never play two tracks from the same collection in a row
+        let lastCollectionId = null;
+        
+        while (remainingCollections.length > 0) {
+            // Reshuffle remaining collections for better mixing
+            // Skip this if we're down to just one collection
+            if (remainingCollections.length > 1) {
+                const collectionsToShuffle = remainingCollections.filter(id => id !== lastCollectionId);
+                const shuffledRemaining = this.shuffleArray(collectionsToShuffle);
+                
+                // If we have a last collection, put it last in our rotation
+                // to avoid playing it twice in a row
+                if (lastCollectionId && remainingCollections.includes(lastCollectionId)) {
+                    remainingCollections = [...shuffledRemaining, lastCollectionId];
+                } else {
+                    remainingCollections = shuffledRemaining;
+                }
+            }
+            
+            // Get the next collection
+            const collectionId = remainingCollections[0];
+            
+            // Add one track from this collection to the playlist
+            const track = shuffledCollectionTracks[collectionId][positions[collectionId]];
+            playlist.push(track);
+            
+            // Update position for this collection
+            positions[collectionId]++;
+            
+            // Check if we've exhausted this collection
+            if (positions[collectionId] >= shuffledCollectionTracks[collectionId].length) {
+                // Remove this collection from the rotation
+                remainingCollections = remainingCollections.filter(id => id !== collectionId);
+            }
+            
+            // Remember this collection to avoid playing it again immediately
+            lastCollectionId = collectionId;
+        }
+        
+        return playlist;
+    }
+    
+    // Get a shuffled playlist that avoids collections with too many errors
+    getFilteredShuffledPlaylist() {
+        if (!this.isInitialized) {
+            console.error('Track loader not initialized. Call initialize() first.');
+            return [];
+        }
+        
+        // Get all collections
+        const collectionIds = Object.keys(this.collectionTracks);
+        
+        // Filter out collections with too many errors
+        // If a collection has more than 30% error rate, reduce its representation
+        const filteredCollections = collectionIds.filter(collectionId => {
+            const errorCount = this.errorCount[collectionId] || 0;
+            const totalTracks = this.collectionTracks[collectionId].length;
+            const errorRate = errorCount / totalTracks;
+            
+            // If error rate is above 80%, skip the collection entirely
+            if (errorRate > 0.8) {
+                console.warn(`Skipping collection ${collectionId} due to high error rate (${errorCount}/${totalTracks})`);
+                return false;
+            }
+            
+            return true;
+        });
+        
+        // If we've filtered out all collections, return the default shuffled playlist
+        if (filteredCollections.length === 0) {
+            console.warn('All collections have high error rates. Using default playlist.');
+            return this.getShuffledPlaylist();
+        }
+        
+        // Shuffle the collection order
+        const shuffledCollections = this.shuffleArray([...filteredCollections]);
         
         // Shuffle the tracks within each collection
         const shuffledCollectionTracks = {};
