@@ -162,7 +162,7 @@
 | col_9_track_5 | Shvidkaca | Aketlebis Gigini | Shvidkaca_-_aketlebis_gigini.mp3 | Shvidkaca (Khukhunaishvilebi)/Shvidkaca_-_aketlebis_gigini.mp3 | Shvidkatsa (Khukhunaishvilebi) | 1913-1914 | Guria |
 | col_9_track_1 | Shvidkaca | Alipasha | Shvidkaca_-_alifasha.mp3 | Shvidkaca (Khukhunaishvilebi)/Shvidkaca_-_alifasha.mp3 | Shvidkatsa (Khukhunaishvilebi) | 1913-1914 | Guria |
 | col_9_track_9 | Shvidkaca | Bebia | Shvidkaca_-_bebia.mp3 | Shvidkaca (Khukhunaishvilebi)/Shvidkaca_-_bebia.mp3 | Shvidkatsa (Khukhunaishvilebi) | 1913-1914 | Guria |
-| col_9_track_8 | Shvidkaca | Dedophlis Simgera | Shvidkaca_-_dedoplis_simgera.mp3 | Shvidkaca (Khukhunaishvilebi)/Shvidkaca_-_dedoplis_simgera.mp3 | Shvidkatsa (Khukhunaishvilebi) | 1913-1914 | Guria |
+| col_9_track_8 | Shvidkaca | Vakhtanguri | Shvidkaca_-_dedoplis_simgera.mp3 | Shvidkaca (Khukhunaishvilebi)/Shvidkaca_-_dedoplis_simgera.mp3 | Shvidkatsa (Khukhunaishvilebi) | 1913-1914 | Guria |
 | col_9_track_7 | Shvidkaca | Kalos Khelkhvavi | Shvidkaca_-_kalos_xelxvavi.mp3 | Shvidkaca (Khukhunaishvilebi)/Shvidkaca_-_kalos_xelxvavi.mp3 | Shvidkatsa (Khukhunaishvilebi) | 1913-1914 | Guria |
 | col_9_track_10 | Shvidkaca | Gojaspiruli Makruli | Shvidkaca_-_mayruli.mp3 | Shvidkaca (Khukhunaishvilebi)/Shvidkaca_-_mayruli.mp3 | Shvidkatsa (Khukhunaishvilebi) | 1913-1914 | Guria |
 | col_9_track_3 | Shvidkaca | Nanina | Shvidkaca_-_nanina.mp3 | Shvidkaca (Khukhunaishvilebi)/Shvidkaca_-_nanina.mp3 | Shvidkatsa (Khukhunaishvilebi) | 1913-1914 | Guria |
