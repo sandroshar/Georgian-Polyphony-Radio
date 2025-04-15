@@ -668,7 +668,7 @@
 | col_16_track_12 | Varlam Simonishvili | Vakhtanguri | Simonishvili_-_Vaxtanguri.mp3 | Varlam Simonishvili/Simonishvili_-_Vaxtanguri.mp3 | Varlam Simonishvili | 1930s | Guria |
 | Track ID | Collection Name | Track Name | Filename | Filepath | Performers | Year | Region |
 |----------|-----------------|------------|----------|----------|------------|------|--------|
-| col_17_track_3 | Anania Erkomaishvili | Aidaodelia | Erkomaishvilebi_-_Aidaodelia.mp3 | Anania Erkomaishvili 1977/Erkomaishvilebi_-_Aidaodelia.mp3 | Erkomaishvili Brothers | unknown | Guria |
+| col_17_track_3 | Anania Erkomaishvili | Aidaodelia | Erkomaishvilebi_-_Aidaodelia.mp3 | Anania Erkomaishvili/Erkomaishvilebi_-_Aidaodelia.mp3 | Erkomaishvili Brothers | unknown | Guria |
 | col_17_track_5 | Anania Erkomaishvili | Alipasha | Ananaia_-_Alipasha (1).mp3 | Anania Erkomaishvili/Ananaia_-_Alipasha (1).mp3 | Anania Erkomaishvili | 1977 | Guria |
 | col_17_track_10 | Anania Erkomaishvili | Alipasha | Ananaia_-_Alipasha.mp3 | Anania Erkomaishvili/Ananaia_-_Alipasha.mp3 | Anania Erkomaishvili | 1977 | Guria |
 | col_17_track_16 | Anania Erkomaishvili | Brevalo | Ananaia_-_Brevalo.mp3 | Anania Erkomaishvili/Ananaia_-_Brevalo.mp3 | Anania Erkomaishvili | 1977 | Guria |
