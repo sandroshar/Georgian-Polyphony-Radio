@@ -124,18 +124,24 @@ class TrackLoader {
                     }
                     
                     // Create proper audio URL with CloudFront domain and URL encoding
-                    // Use a more robust URL construction approach
                     if (track.filepath && track.filename) {
                         const pathParts = track.filepath.split('/');
                         const collectionFolder = pathParts[0];
                         
-                        // For collection folders: use folder + '/' + filename
-                        // Otherwise, use full filepath as is
-                        const audioPath = pathParts.length > 1 ? 
-                            `${encodeURIComponent(collectionFolder)}/${encodeURIComponent(track.filename)}` : 
-                            encodeURIComponent(track.filepath);
-                            
-                        track.audioUrl = `${this.cloudFrontDomain}/audio/${audioPath}`;
+                        // Check if it's the problematic Anania Erkomaishvili collection
+                        if (track.collection_id === 'col_17') {
+                            // Special handling for Anania Erkomaishvili collection
+                            // Use the full filepath instead of just the collection folder + filename
+                            track.audioUrl = `${this.cloudFrontDomain}/audio/${encodeURIComponent(track.filepath)}`;
+                        } else {
+                            // For other collections: use folder + '/' + filename
+                            // Otherwise, use full filepath as is
+                            const audioPath = pathParts.length > 1 ? 
+                                `${encodeURIComponent(collectionFolder)}/${encodeURIComponent(track.filename)}` : 
+                                encodeURIComponent(track.filepath);
+                                
+                            track.audioUrl = `${this.cloudFrontDomain}/audio/${audioPath}`;
+                        }
                     } else {
                         // Skip tracks with missing filepath or filename
                         console.warn(`Skipping track with missing filepath or filename: ${track.id} - ${track.title}`);
