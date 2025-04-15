@@ -126,20 +126,6 @@
 | col_6_track_15 | ჯოკია მეშველიანის გუნდი | Zari | Meshveliani_-_Zari.mp3 | ჯოკია მეშველიანის გუნდი/Meshveliani_-_Zari.mp3 | Jokia Meshveliani's Ensemble | Unknown | Svaneti |
 | Track ID | Collection Name | Track Name | Filename | Filepath | Performers | Year | Region |
 |----------|---------------|------------|----------|----------|------------|------|--------|
-| col_7_track_3 | დები იშხნელები | Amas Gidzgvni | Ishkhnelebi_-_Amas_Gidzgvni.mp3 | დები იშხნელები/Ishkhnelebi_-_Amas_Gidzgvni.mp3 | Ishkhneli Sisters | Unknown | Urban |
-| col_7_track_11 | დები იშხნელები | Da Is Vints Gakebda | Ishkhnelebi_-_Da_Is_Vints_Gakebda.mp3 | დები იშხნელები/Ishkhnelebi_-_Da_Is_Vints_Gakebda.mp3 | Ishkhneli Sisters | Unknown | Urban |
-| col_7_track_10 | დები იშხნელები | Gazapkhuli | Ishkhnelebi_-_Gazapkhuli.mp3 | დები იშხნელები/Ishkhnelebi_-_Gazapkhuli.mp3 | Ishkhneli Sisters | Unknown | Urban |
-| col_7_track_5 | დები იშხნელები | Turpav Turpav | Ishkhnelebi_-_Turpav_Turpav.mp3 | დები იშხნელები/Ishkhnelebi_-_Turpav_Turpav.mp3 | Ishkhneli Sisters | Unknown | Urban |
-| col_7_track_6 | დები იშხნელები | Tsitsinatela | Ishkhnelebi_-_Tsitsinatela.mp3 | დები იშხნელები/Ishkhnelebi_-_Tsitsinatela.mp3 | Ishkhneli Sisters | Unknown | Urban |
-| col_7_track_1 | დები იშხნელები | Shen Ikhare Turpav | Ishkhnelebi_-_Shen_Ikhare_turpav.mp3 | დები იშხნელები/Ishkhnelebi_-_Shen_Ikhare_turpav.mp3 | Ishkhneli Sisters | Unknown | Urban |
-| col_7_track_8 | დები იშხნელები | Suliko | Ishkhnelebi_-_Suliko.mp3 | დები იშხნელები/Ishkhnelebi_-_Suliko.mp3 | Ishkhneli Sisters | Unknown | Urban |
-| col_7_track_4 | დები იშხნელები | Morbis Aragvi | Ishkhnelebi_-_Morbis_Aragvi.mp3 | დები იშხნელები/Ishkhnelebi_-_Morbis_Aragvi.mp3 | Ishkhneli Sisters | Unknown | Urban |
-| col_7_track_9 | დები იშხნელები | Mravaljamier | Ishkhnelebi_-_Mravaljamier.mp3 | დები იშხნელები/Ishkhnelebi_-_Mravaljamier.mp3 | Ishkhneli Sisters | Unknown | Urban |
-| col_7_track_2 | დები იშხნელები | Kovel Sneulebaze | Ishkhnelebi_-_Kovel_Sneulebaze.mp3 | დები იშხნელები/Ishkhnelebi_-_Kovel_Sneulebaze.mp3 | Ishkhneli Sisters | Unknown | Urban |
-| col_7_track_7 | დები იშხნელები | Mkholod Shen Erts | Ishkhnelebi_-_Mkholod_Shen_Erts.mp3 | დები იშხნელები/Ishkhnelebi_-_Mkholod_Shen_Erts.mp3 | Ishkhneli Sisters | Unknown | Urban |
-| col_7_track_12 | დები იშხნელები | An Ki An Ara | Ishkhnelebi_-_An_ki_An_Ara.mp3 | დები იშხნელები/Ishkhnelebi_-_An_ki_An_Ara.mp3 | Ishkhneli Sisters | Unknown | Urban |
-| Track ID | Collection Name | Track Name | Filename | Filepath | Performers | Year | Region |
-|----------|---------------|------------|----------|----------|------------|------|--------|
 | col_8_track_8 | Artem Erkomaishvili | Madlobeli | Erkomaishvilebi_-_Madlobeli.mp3 | Artem Erkomaishvili/Erkomaishvilebi_-_Madlobeli.mp3 | Erkomaishvili Brothers | unknown | Guria |
 | col_8_track_16 | Artem Erkomaishvili | Nanina | Erkomaishvilebi_-_Nanina.mp3 | Artem Erkomaishvili/Erkomaishvilebi_-_Nanina.mp3 | Erkomaishvili Brothers | unknown | Guria |
 | col_8_track_2 | Artem Erkomaishvili | Orira | Erkomaishvilebi_-_Orira.mp3 | Artem Erkomaishvili/Erkomaishvilebi_-_Orira.mp3 | Erkomaishvili Brothers | unknown | Guria |
