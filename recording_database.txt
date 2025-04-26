@@ -144,16 +144,16 @@
 | col_8_track_7 | Artem Erkomaishvili | Sikvarulma Mogvikvana | Erkomaishvilebi_-_Sikvarulma_Mogvikvana.mp3 | Artem Erkomaishvili/Erkomaishvilebi_-_Sikvarulma_Mogvikvana.mp3 | Artem Erkomaishvili | unknown | Guria |
 | Track ID | Collection Name | Track Name | Filename | Filepath | Performers | Year | Region |
 |----------|---------------|------------|----------|----------|------------|------|--------|
-| col_9_track_2 | Shvidkaca | Adilei | Shvidkaca_-_adilei.mp3 | Shvidkaca (Khukhunaishvilebi)/Shvidkaca_-_adilei.mp3 | Shvidkatsa (Khukhunaishvilebi) | 1913-1914 | Guria |
-| col_9_track_5 | Shvidkaca | Aketlebis Gigini | Shvidkaca_-_aketlebis_gigini.mp3 | Shvidkaca (Khukhunaishvilebi)/Shvidkaca_-_aketlebis_gigini.mp3 | Shvidkatsa (Khukhunaishvilebi) | 1913-1914 | Guria |
-| col_9_track_1 | Shvidkaca | Alipasha | Shvidkaca_-_alifasha.mp3 | Shvidkaca (Khukhunaishvilebi)/Shvidkaca_-_alifasha.mp3 | Shvidkatsa (Khukhunaishvilebi) | 1913-1914 | Guria |
-| col_9_track_9 | Shvidkaca | Bebia | Shvidkaca_-_bebia.mp3 | Shvidkaca (Khukhunaishvilebi)/Shvidkaca_-_bebia.mp3 | Shvidkatsa (Khukhunaishvilebi) | 1913-1914 | Guria |
-| col_9_track_8 | Shvidkaca | Vakhtanguri | Shvidkaca_-_dedoplis_simgera.mp3 | Shvidkaca (Khukhunaishvilebi)/Shvidkaca_-_dedoplis_simgera.mp3 | Shvidkatsa (Khukhunaishvilebi) | 1913-1914 | Guria |
-| col_9_track_7 | Shvidkaca | Kalos Khelkhvavi | Shvidkaca_-_kalos_xelxvavi.mp3 | Shvidkaca (Khukhunaishvilebi)/Shvidkaca_-_kalos_xelxvavi.mp3 | Shvidkatsa (Khukhunaishvilebi) | 1913-1914 | Guria |
-| col_9_track_10 | Shvidkaca | Gojaspiruli Makruli | Shvidkaca_-_mayruli.mp3 | Shvidkaca (Khukhunaishvilebi)/Shvidkaca_-_mayruli.mp3 | Shvidkatsa (Khukhunaishvilebi) | 1913-1914 | Guria |
-| col_9_track_3 | Shvidkaca | Nanina | Shvidkaca_-_nanina.mp3 | Shvidkaca (Khukhunaishvilebi)/Shvidkaca_-_nanina.mp3 | Shvidkatsa (Khukhunaishvilebi) | 1913-1914 | Guria |
-| col_9_track_6 | Shvidkaca | Khasanbegura | Shvidkaca_-_xasanbegura.mp3 | Shvidkaca (Khukhunaishvilebi)/Shvidkaca_-_xasanbegura.mp3 | Shvidkatsa (Khukhunaishvilebi) | 1913-1914 | Guria |
-| col_9_track_4 | Shvidkaca | Kharanai Khanashi | Shvidkaca_-_yaranai_yanashi.mp3 | Shvidkaca (Khukhunaishvilebi)/Shvidkaca_-_yaranai_yanashi.mp3 | Shvidkatsa (Khukhunaishvilebi) | 1913-1914 | Guria |
+| col_9_track_2 | Shvidkaca | Adilei | Shvidkaca_-_adilei.mp3 | Shvidkaca (Khukhunaishvilebi)/Shvidkaca_-_adilei.mp3 | Zemo Aketi Choir Led by Kotsia Khukhunaishvili | 1913-1914 | Guria |
+| col_9_track_5 | Shvidkaca | Aketlebis Gigini | Shvidkaca_-_aketlebis_gigini.mp3 | Shvidkaca (Khukhunaishvilebi)/Shvidkaca_-_aketlebis_gigini.mp3 | Zemo Aketi Choir Led by Kotsia Khukhunaishvili | 1913-1914 | Guria |
+| col_9_track_1 | Shvidkaca | Alipasha | Shvidkaca_-_alifasha.mp3 | Shvidkaca (Khukhunaishvilebi)/Shvidkaca_-_alifasha.mp3 | Zemo Aketi Choir Led by Kotsia Khukhunaishvili | 1913-1914 | Guria |
+| col_9_track_9 | Shvidkaca | Bebia | Shvidkaca_-_bebia.mp3 | Shvidkaca (Khukhunaishvilebi)/Shvidkaca_-_bebia.mp3 | Zemo Aketi Choir Led by Kotsia Khukhunaishvili | 1913-1914 | Guria |
+| col_9_track_8 | Shvidkaca | Dedoplis Simghera | Shvidkaca_-_dedoplis_simgera.mp3 | Shvidkaca (Khukhunaishvilebi)/Shvidkaca_-_dedoplis_simgera.mp3 | Zemo Aketi Choir Led by Kotsia Khukhunaishvili | 1913-1914 | Guria |
+| col_9_track_7 | Shvidkaca | Kalos Khelkhvavi | Shvidkaca_-_kalos_xelxvavi.mp3 | Shvidkaca (Khukhunaishvilebi)/Shvidkaca_-_kalos_xelxvavi.mp3 | Zemo Aketi Choir Led by Kotsia Khukhunaishvili | 1913-1914 | Guria |
+| col_9_track_10 | Shvidkaca | Gojaspiruli Makruli | Shvidkaca_-_mayruli.mp3 | Shvidkaca (Khukhunaishvilebi)/Shvidkaca_-_mayruli.mp3 | Zemo Aketi Choir Led by Kotsia Khukhunaishvili | 1913-1914 | Guria |
+| col_9_track_3 | Shvidkaca | Nanina | Shvidkaca_-_nanina.mp3 | Shvidkaca (Khukhunaishvilebi)/Shvidkaca_-_nanina.mp3 | Zemo Aketi Choir Led by Kotsia Khukhunaishvili | 1913-1914 | Guria |
+| col_9_track_6 | Shvidkaca | Khasanbegura | Shvidkaca_-_xasanbegura.mp3 | Shvidkaca (Khukhunaishvilebi)/Shvidkaca_-_xasanbegura.mp3 | ShvidkatsaZemo Aketi Choir Led by Kotsia Khukhunaishvili | 1913-1914 | Guria |
+| col_9_track_4 | Shvidkaca | Kharanai Khanashi | Shvidkaca_-_yaranai_yanashi.mp3 | Shvidkaca (Khukhunaishvilebi)/Shvidkaca_-_yaranai_yanashi.mp3 | Zemo Aketi Choir Led by Kotsia Khukhunaishvili | 1913-1914 | Guria |
 # Grimaud Collection of Georgian Folk Music with Track IDs
 
 
