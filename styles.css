@@ -5,6 +5,7 @@
     --player-bg: #111111;
     --button-hover: #333333;
     --error-color: #ff4d4d;
+    --success-color: #2ecc71;
     --progress-bg: rgba(255, 255, 255, 0.2);
     --progress-fill: var(--accent-color);
 }
@@ -203,7 +204,7 @@ button:disabled {
     cursor: not-allowed;
 }
 
-.play-btn, .mute-btn, .nav-btn {
+.play-btn, .mute-btn, .nav-btn, .share-btn {
     width: 50px;
     height: 50px;
     border-radius: 50%;
@@ -213,8 +214,20 @@ button:disabled {
     justify-content: center;
 }
 
-.play-btn:hover:not(:disabled), .mute-btn:hover:not(:disabled), .nav-btn:hover:not(:disabled) {
+.play-btn:hover:not(:disabled), 
+.mute-btn:hover:not(:disabled), 
+.nav-btn:hover:not(:disabled),
+.share-btn:hover:not(:disabled) {
     background-color: var(--button-hover);
+}
+
+.share-btn {
+    width: 40px;
+    height: 40px;
+}
+
+.share-btn:active {
+    transform: scale(0.95);
 }
 
 .volume-slider {
@@ -289,7 +302,7 @@ footer {
     to { transform: rotate(360deg); }
 }
 
-/* Error message */
+/* Error and success messages */
 .error-message, .audio-error {
     background-color: rgba(255, 77, 77, 0.2);
     color: var(--error-color);
@@ -297,6 +310,28 @@ footer {
     border-radius: 5px;
     margin-top: 15px;
     font-size: 0.9rem;
+}
+
+.share-success {
+    background-color: rgba(46, 204, 113, 0.2);
+    color: var(--success-color);
+    padding: 10px;
+    border-radius: 5px;
+    margin-top: 15px;
+    font-size: 0.9rem;
+    position: absolute;
+    bottom: 20px;
+    left: 30px;
+    right: 30px;
+    text-align: center;
+    animation: fadeInOut 3s forwards;
+}
+
+@keyframes fadeInOut {
+    0% { opacity: 0; transform: translateY(10px); }
+    10% { opacity: 1; transform: translateY(0); }
+    80% { opacity: 1; transform: translateY(0); }
+    100% { opacity: 0; transform: translateY(-10px); }
 }
 
 /* Debug panel for development */
@@ -386,6 +421,8 @@ body.debug-mode .debug-panel {
     
     .controls {
         flex-wrap: wrap;
+        justify-content: center;
+        gap: 10px;
     }
     
     .volume-slider {
@@ -397,5 +434,15 @@ body.debug-mode .debug-panel {
     
     .progress-container {
         margin-bottom: 15px;
+    }
+    
+    .share-btn {
+        width: 35px;
+        height: 35px;
+    }
+    
+    .share-btn svg {
+        width: 18px;
+        height: 18px;
     }
 }
