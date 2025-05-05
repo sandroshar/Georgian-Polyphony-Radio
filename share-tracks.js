@@ -1,9 +1,45 @@
-// share-tracks.js
+// share-tracks.js - Fixed version
 // Add sharing functionality to the Georgian Polyphony Player
 
 (function() {
+    // Wait for window globals to be available
+    let checkForAppReady = setInterval(() => {
+        // Check if key variables and functions exist
+        if (typeof tracks !== 'undefined' && 
+            typeof currentTrackIndex !== 'undefined' && 
+            typeof loadTrack === 'function' &&
+            typeof trackLoader !== 'undefined') {
+            
+            clearInterval(checkForAppReady);
+            console.log("App is ready, initializing share functionality");
+            
+            // Initialize share functionality
+            initShareFunctionality();
+        }
+    }, 500);
+    
+    // Set a timeout to stop checking after 10 seconds to prevent infinite loop
+    setTimeout(() => {
+        clearInterval(checkForAppReady);
+        console.log("Timeout waiting for app to be ready. Share functionality may not work correctly.");
+    }, 10000);
+    
+    function initShareFunctionality() {
+        // Create share button
+        createShareButton();
+        
+        // Check URL for track ID
+        checkUrlForTrackId();
+        
+        // Patch loadTrack to update URL
+        patchLoadTrack();
+    }
+    
     // Create share button
     function createShareButton() {
+        // Check if button already exists
+        if (document.getElementById('share-btn')) return;
+        
         // Create the button
         const shareBtn = document.createElement('button');
         shareBtn.id = 'share-btn';
@@ -18,31 +54,51 @@
         
         // Add the button to controls
         const controlsContainer = document.querySelector('.controls');
-        // Insert between mute button and volume slider
-        const muteBtn = document.getElementById('mute-btn');
-        controlsContainer.insertBefore(shareBtn, muteBtn.nextSibling);
-        
-        // Add click event listener
-        shareBtn.addEventListener('click', copyShareLink);
-    }
-    
-    // Copy link to clipboard
-    function copyShareLink() {
-        if (!window.tracks || !window.currentTrackIndex !== undefined) {
-            console.error('Tracks not initialized or no current track');
+        if (!controlsContainer) {
+            console.error("Controls container not found");
             return;
         }
         
-        const currentTrack = window.tracks[window.currentTrackIndex];
+        // Insert between mute button and volume slider
+        const muteBtn = document.getElementById('mute-btn');
+        if (!muteBtn) {
+            console.error("Mute button not found");
+            controlsContainer.appendChild(shareBtn); // Append at the end if mute button not found
+        } else {
+            controlsContainer.insertBefore(shareBtn, muteBtn.nextSibling);
+        }
+        
+        // Add click event listener
+        shareBtn.addEventListener('click', copyShareLink);
+        console.log("Share button created and added to the player");
+    }
+    
+    // Copy link to clipboard
+    function copyShareLink(event) {
+        // Prevent default button behavior
+        if (event) event.preventDefault();
+        
+        console.log("Share button clicked");
+        
+        // Check if tracks and currentTrackIndex are defined
+        if (typeof tracks === 'undefined' || currentTrackIndex === undefined) {
+            console.error('Tracks not initialized or no current track index');
+            return;
+        }
+        
+        const currentTrack = tracks[currentTrackIndex];
         
         if (!currentTrack || !currentTrack.id) {
-            if (typeof window.showErrorMessage === 'function') {
-                window.showErrorMessage('Cannot share this track.');
+            console.error('No valid track to share');
+            if (typeof showErrorMessage === 'function') {
+                showErrorMessage('Cannot share this track.');
             } else {
                 alert('Cannot share this track.');
             }
             return;
         }
+        
+        console.log("Sharing track:", currentTrack.title, "ID:", currentTrack.id);
         
         // Create the shareable URL with the track ID
         const url = new URL(window.location.href);
@@ -51,24 +107,68 @@
         // Add the track ID parameter
         url.searchParams.set('track', currentTrack.id);
         
-        // Copy to clipboard
-        navigator.clipboard.writeText(url.toString())
-            .then(() => {
-                // Show success message
+        const shareUrl = url.toString();
+        console.log("Share URL:", shareUrl);
+        
+        // Try to use clipboard API
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(shareUrl)
+                .then(() => {
+                    console.log("URL copied to clipboard");
+                    showShareSuccess();
+                })
+                .catch(error => {
+                    console.error('Error copying to clipboard:', error);
+                    
+                    // Fallback for clipboard API failure
+                    fallbackCopyToClipboard(shareUrl);
+                });
+        } else {
+            // Browser doesn't support Clipboard API
+            console.log("Clipboard API not available, trying fallback");
+            fallbackCopyToClipboard(shareUrl);
+        }
+        
+        // Update URL regardless of clipboard success
+        updateUrlWithTrackId(currentTrack.id);
+    }
+    
+    // Fallback copy method
+    function fallbackCopyToClipboard(text) {
+        try {
+            // Create temporary textarea
+            const textArea = document.createElement("textarea");
+            textArea.value = text;
+            textArea.style.position = "fixed";  // Avoid scrolling to bottom
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+            
+            // Execute copy command
+            const successful = document.execCommand('copy');
+            
+            // Remove temporary element
+            document.body.removeChild(textArea);
+            
+            if (successful) {
+                console.log("Fallback copy successful");
                 showShareSuccess();
-            })
-            .catch(error => {
-                console.error('Error copying to clipboard:', error);
-                
-                if (typeof window.showErrorMessage === 'function') {
-                    window.showErrorMessage('Could not copy link. Try manually copying from the address bar.');
+            } else {
+                console.error("Fallback copy failed");
+                if (typeof showErrorMessage === 'function') {
+                    showErrorMessage('Could not copy link. Try manually copying from the address bar.');
                 } else {
                     alert('Could not copy link. Try manually copying from the address bar.');
                 }
-                
-                // Update the URL anyway so they can copy manually
-                updateUrlWithTrackId(currentTrack.id);
-            });
+            }
+        } catch (err) {
+            console.error('Fallback copy error:', err);
+            if (typeof showErrorMessage === 'function') {
+                showErrorMessage('Could not copy link. Try manually copying from the address bar.');
+            } else {
+                alert('Could not copy link. Try manually copying from the address bar.');
+            }
+        }
     }
     
     // Update URL with track ID
@@ -77,7 +177,12 @@
         url.searchParams.set('track', trackId);
         
         // Replace current URL without reloading the page
-        window.history.replaceState({}, '', url.toString());
+        try {
+            window.history.replaceState({}, '', url.toString());
+            console.log("URL updated with track ID:", trackId);
+        } catch (e) {
+            console.error("Error updating URL:", e);
+        }
     }
     
     // Show success message
@@ -93,14 +198,16 @@
         
         // Add to player container
         const playerContainer = document.querySelector('.player-container');
-        playerContainer.appendChild(successElement);
-        
-        // Auto-remove after 3 seconds
-        setTimeout(() => {
-            if (successElement.parentNode) {
-                successElement.remove();
-            }
-        }, 3000);
+        if (playerContainer) {
+            playerContainer.appendChild(successElement);
+            
+            // Auto-remove after 3 seconds
+            setTimeout(() => {
+                if (successElement.parentNode) {
+                    successElement.remove();
+                }
+            }, 3000);
+        }
     }
     
     // Check for track ID in URL when page loads
@@ -108,60 +215,184 @@
         const urlParams = new URLSearchParams(window.location.search);
         const trackId = urlParams.get('track');
         
-        if (!trackId) return;
+        if (!trackId) {
+            console.log("No track ID in URL");
+            return;
+        }
         
-        // Wait for tracks to load
-        const checkInterval = setInterval(() => {
-            if (window.trackLoader && window.trackLoader.isInitialized && window.tracks && window.tracks.length > 0) {
-                clearInterval(checkInterval);
-                
-                // Find the track
-                const trackIndex = window.trackLoader.getTrackIndex(trackId);
-                
-                if (trackIndex !== -1) {
-                    // Load the specific track
-                    window.loadTrack(trackIndex);
-                    window.isPlaying = true;
-                    window.updatePlayPauseIcon();
-                } else {
-                    console.warn(`Track with ID ${trackId} not found.`);
-                    if (typeof window.showErrorMessage === 'function') {
-                        window.showErrorMessage('The shared track could not be found.');
-                    }
+        console.log("Found track ID in URL:", trackId);
+        
+        // Make sure trackLoader is initialized
+        if (!trackLoader || !trackLoader.isInitialized) {
+            console.log("Waiting for track loader to initialize...");
+            
+            // Wait for tracks to load
+            const checkInterval = setInterval(() => {
+                if (trackLoader && trackLoader.isInitialized && 
+                    typeof tracks !== 'undefined' && tracks.length > 0) {
+                    clearInterval(checkInterval);
+                    loadSharedTrack(trackId);
                 }
-            }
-        }, 500);
+            }, 500);
+            
+            // Set a timeout to stop checking after 10 seconds
+            setTimeout(() => {
+                clearInterval(checkInterval);
+            }, 10000);
+        } else {
+            // Track loader is ready, load the track
+            loadSharedTrack(trackId);
+        }
+    }
+    
+    // Load a shared track by ID
+    function loadSharedTrack(trackId) {
+        console.log("Attempting to load shared track:", trackId);
         
-        // Set a timeout to stop checking after 10 seconds
-        setTimeout(() => {
-            clearInterval(checkInterval);
-        }, 10000);
+        // Make sure we have the getTrackIndex method
+        if (!trackLoader.getTrackIndex) {
+            console.error("trackLoader.getTrackIndex method not found!");
+            // Try to add the method if not present
+            trackLoader.getTrackIndex = function(trackId) {
+                if (!this.isInitialized) {
+                    console.error('Track loader not initialized. Call initialize() first.');
+                    return -1;
+                }
+                
+                const track = this.tracks.find(track => track.id === trackId);
+                if (!track) return -1;
+                
+                return this.tracks.indexOf(track);
+            };
+        }
+        
+        // Find the track index
+        const trackIndex = trackLoader.getTrackIndex(trackId);
+        console.log("Track index:", trackIndex);
+        
+        if (trackIndex !== -1) {
+            // Load the specific track
+            if (typeof loadTrack === 'function') {
+                loadTrack(trackIndex);
+                isPlaying = true;
+                if (typeof updatePlayPauseIcon === 'function') {
+                    updatePlayPauseIcon();
+                }
+                console.log("Shared track loaded successfully");
+            } else {
+                console.error("loadTrack function not found");
+            }
+        } else {
+            console.warn(`Track with ID ${trackId} not found.`);
+            if (typeof showErrorMessage === 'function') {
+                showErrorMessage('The shared track could not be found.');
+            } else {
+                alert('The shared track could not be found.');
+            }
+        }
     }
     
     // Patch loadTrack function to update URL
-    const originalLoadTrack = window.loadTrack;
-    if (originalLoadTrack) {
-        window.loadTrack = function(index) {
+    function patchLoadTrack() {
+        if (typeof loadTrack !== 'function') {
+            console.error("loadTrack function not found, cannot patch");
+            return;
+        }
+        
+        console.log("Patching loadTrack function");
+        
+        // Store original function
+        const originalLoadTrack = loadTrack;
+        
+        // Replace with patched version
+        loadTrack = function(index) {
             // Call the original function
             const result = originalLoadTrack.call(this, index);
             
-            // Update URL with track ID
-            if (window.tracks && window.tracks[index] && window.tracks[index].id) {
-                updateUrlWithTrackId(window.tracks[index].id);
-            }
+            // Update URL with track ID after a short delay
+            // (to ensure track loading has started)
+            setTimeout(() => {
+                if (typeof tracks !== 'undefined' && tracks[index] && tracks[index].id) {
+                    updateUrlWithTrackId(tracks[index].id);
+                }
+            }, 100);
             
             return result;
         };
     }
     
-    // Add share button once DOM is loaded
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', () => {
-            createShareButton();
-            checkUrlForTrackId();
-        });
-    } else {
-        createShareButton();
-        checkUrlForTrackId();
+    // Add CSS styles if not present
+    function addStyles() {
+        // Check if styles already exist
+        if (document.querySelector('style[data-share-styles="true"]')) {
+            return;
+        }
+        
+        const style = document.createElement('style');
+        style.setAttribute('data-share-styles', 'true');
+        style.textContent = `
+            /* Share button styling */
+            .share-btn {
+                width: 40px;
+                height: 40px;
+                border-radius: 50%;
+                background-color: rgba(255, 255, 255, 0.1);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                transition: all 0.3s ease;
+            }
+            
+            .share-btn:hover:not(:disabled) {
+                background-color: var(--button-hover, #333333);
+                color: var(--accent-color, #e6c200);
+            }
+            
+            .share-btn:active {
+                transform: scale(0.95);
+            }
+            
+            /* Success message */
+            .share-success {
+                background-color: rgba(46, 204, 113, 0.2);
+                color: #2ecc71;
+                padding: 10px;
+                border-radius: 5px;
+                margin-top: 15px;
+                font-size: 0.9rem;
+                position: absolute;
+                bottom: 20px;
+                left: 30px;
+                right: 30px;
+                text-align: center;
+                animation: fadeInOut 3s forwards;
+                z-index: 100;
+            }
+            
+            @keyframes fadeInOut {
+                0% { opacity: 0; transform: translateY(10px); }
+                10% { opacity: 1; transform: translateY(0); }
+                80% { opacity: 1; transform: translateY(0); }
+                100% { opacity: 0; transform: translateY(-10px); }
+            }
+            
+            /* Responsive adjustments */
+            @media (max-width: 600px) {
+                .share-btn {
+                    width: 35px;
+                    height: 35px;
+                }
+                
+                .share-btn svg {
+                    width: 18px;
+                    height: 18px;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+        console.log("Share styles added");
     }
+    
+    // Add styles
+    addStyles();
 })();
