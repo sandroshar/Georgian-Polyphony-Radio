@@ -126,9 +126,9 @@
 | col_6_track_15 | ჯოკია მეშველიანის გუნდი | Zari | Meshveliani_-_Zari.mp3 | ჯოკია მეშველიანის გუნდი/Meshveliani_-_Zari.mp3 | Jokia Meshveliani's Ensemble | Unknown | Svaneti |
 | Track ID | Collection Name | Track Name | Filename | Filepath | Performers | Year | Region |
 |----------|---------------|------------|----------|----------|------------|------|--------|
-| col_8_track_8 | Artem Erkomaishvili | Madlobeli | Erkomaishvilebi_-_Madlobeli.mp3 | Artem Erkomaishvili/Erkomaishvilebi_-_Madlobeli.mp3 | Erkomaishvili Brothers | unknown | Guria |
-| col_8_track_16 | Artem Erkomaishvili | Nanina | Erkomaishvilebi_-_Nanina.mp3 | Artem Erkomaishvili/Erkomaishvilebi_-_Nanina.mp3 | Erkomaishvili Brothers | unknown | Guria |
-| col_8_track_2 | Artem Erkomaishvili | Orira | Erkomaishvilebi_-_Orira.mp3 | Artem Erkomaishvili/Erkomaishvilebi_-_Orira.mp3 | Erkomaishvili Brothers | unknown | Guria |
+| col_8_track_8 | Artem Erkomaishvili | Madlobeli | Erkomaishvilebi_-_Madlobeli.mp3 | Artem Erkomaishvili/Erkomaishvilebi_-_Madlobeli.mp3 | Erkomaishvilebi | unknown | Guria |
+| col_8_track_16 | Artem Erkomaishvili | Nanina | Erkomaishvilebi_-_Nanina.mp3 | Artem Erkomaishvili/Erkomaishvilebi_-_Nanina.mp3 | Erkomaishvilebi | unknown | Guria |
+| col_8_track_2 | Artem Erkomaishvili | Orira | Erkomaishvilebi_-_Orira.mp3 | Artem Erkomaishvili/Erkomaishvilebi_-_Orira.mp3 | Erkomaishvilebi | unknown | Guria |
 | col_8_track_4 | Artem Erkomaishvili | Acharuli Makruli | Erkomaishvilebi_-_Acharuli_Makruli1.mp3 | Artem Erkomaishvili/Erkomaishvilebi_-_Acharuli_Makruli1.mp3 | Artem Erkomaishvili | unknown | Achara |
 | col_8_track_11 | Artem Erkomaishvili | Didi Khnidan | Erkomaishvilebi_-_Didi_Khnidan.mp3 | Artem Erkomaishvili/Erkomaishvilebi_-_Didi_Khnidan.mp3 | Artem Erkomaishvili | unknown | Guria |
 | col_8_track_6 | Artem Erkomaishvili | Khasanbegura | Erkomaishvilebi_-_Khasanbegura1.mp3 | Artem Erkomaishvili/Erkomaishvilebi_-_Khasanbegura1.mp3 | Artem Erkomaishvili | unknown | Guria |
@@ -664,14 +664,14 @@
 | col_17_track_6 | Anania Erkomaishvili Collection | Kartvel Kalma Sikvaruli | Anania_-_Kartvel_Kalma_Sikvaruli.mp3 | Anania Erkomaishvili/Anania_-_Kartvel_Kalma_Sikvaruli.mp3 | Anania Erkomaishvili | 1977 | Guria |
 | col_17_track_13 | Anania Erkomaishvili Collection| Maglidan Gadmomdgariko | Anania_-_Maglidan_Gadmomdgariyo.mp3 | Anania Erkomaishvili/Anania_-_Maglidan_Gadmomdgariyo.mp3 | Anania Erkomaishvili | 1977 | Guria |
 | col_17_track_8 | Anania Erkomaishvili Collection | Me Patara Kartveli Var | Anania_-_Me_Patara_Kartveli_Var.mp3 | Anania Erkomaishvili/Anania_-_Me_Patara_Kartveli_Var.mp3 | Anania Erkomaishvili | 1977 | Guria |
-| col_17_track_15 | Anania Erkomaishvili Collection | Mtsvanesa Da Ukudosa | Erkomaishvilebi_-_Mtsvanesa_Da_Ukudosa copy.mp3 | Anania Erkomaishvili/Erkomaishvilebi_-_Mtsvanesa_Da_Ukudosa copy.mp3 | Erkomaishvili Brothers | unknown | Guria |
+| col_17_track_15 | Anania Erkomaishvili Collection | Mtsvanesa Da Ukudosa | Erkomaishvilebi_-_Mtsvanesa_Da_Ukudosa copy.mp3 | Anania Erkomaishvili/Erkomaishvilebi_-_Mtsvanesa_Da_Ukudosa copy.mp3 | Erkomaishvilebi | unknown | Guria |
 | col_17_track_17 | Anania Erkomaishvili Collection | Natliachemi Mestumra | Anania_-_Natliachemi_Mestumra.mp3 | Anania Erkomaishvili/Anania_-_Natliachemi_Mestumra.mp3 | Artem Erkomaishvili | unknown | Guria |
 | col_17_track_1 | Anania Erkomaishvili Collection | Otiauri | Anania_-_Otiauri.mp3 | Anania Erkomaishvili/Anania_-_Otiauri.mp3 | Anania Erkomaishvili | 1977 | Guria |
 | col_17_track_2 | Anania Erkomaishvili Collection| Pikris Simgera | Anania_-_Pikris_Simgera.mp3 | Anania Erkomaishvili/Anania_-_Pikris_Simgera.mp3 | Anania Erkomaishvili | 1977 | Guria |
 | col_17_track_11 | Anania Erkomaishvili Collection| Ra Kargia Satsutro | Anania_-_Ra_Kargia_Satsutro.mp3 | Anania Erkomaishvili/Anania_-_Ra_Kargia_Satsutro.mp3 | Anania Erkomaishvili | 1977 | Guria |
-| col_17_track_12 | Anania Erkomaishvili Collection | Shavi Shashvi | Erkomaishvilebi_-_Shavi_Shashvi copy.mp3 | Anania Erkomaishvili/Erkomaishvilebi_-_Shavi_Shashvi copy.mp3 | Erkomaishvili Brothers | unknown | Guria |
+| col_17_track_12 | Anania Erkomaishvili Collection | Shavi Shashvi | Erkomaishvilebi_-_Shavi_Shashvi copy.mp3 | Anania Erkomaishvili/Erkomaishvilebi_-_Shavi_Shashvi copy.mp3 | Erkomaishvilebi | unknown | Guria |
 | col_17_track_14 | Anania Erkomaishvili Collection | Shavi Shashvi | Anania_-_Shavi_Shashvi.mp3 | Anania Erkomaishvili/Anania_-_Shavi_Shashvi.mp3 | Anania Erkomaishvili | 1977 | Guria |
-| col_17_track_9 | Anania Erkomaishvili Collection | Yaranai Kanashia | Erkomaishvilebi_-_Yaranai_Kanashia copy.mp3 | Anania Erkomaishvili/Erkomaishvilebi_-_Yaranai_Kanashia copy.mp3 | Erkomaishvili Brothers | unknown | Guria |
+| col_17_track_9 | Anania Erkomaishvili Collection | Yaranai Kanashia | Erkomaishvilebi_-_Yaranai_Kanashia copy.mp3 | Anania Erkomaishvili/Erkomaishvilebi_-_Yaranai_Kanashia copy.mp3 | Erkomaishvilebi | unknown | Guria |
 | Track ID | Collection Name | Track Name | Filename | Filepath | Performers | Year | Region |
 |----------|-----------------|------------|----------|----------|------------|------|--------|
 | col_18_track_1 | Levan Mughalashvili | Gurjaanuli Chakrulo | Mugalashvili_-_gurjaanuli_chakrulo.mp3 | Levan Mughalashvili (Kakheti)/Mugalashvili_-_gurjaanuli_chakrulo.mp3 | Levan Mughalashvili's Choir | unknown | Kakheti |
