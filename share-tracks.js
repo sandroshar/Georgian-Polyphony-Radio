@@ -1,7 +1,13 @@
-// share-tracks.js - Fixed version
+// share-tracks.js - Fixed version with proper URL handling
 // Add sharing functionality to the Georgian Polyphony Player
 
 (function() {
+    // Global flag to track if we're handling a shared track URL
+    let handlingSharedTrack = false;
+    
+    // Flag to prevent duplicate loading
+    let isInitialized = false;
+    
     // Wait for window globals to be available
     let checkForAppReady = setInterval(() => {
         // Check if key variables and functions exist
@@ -13,8 +19,11 @@
             clearInterval(checkForAppReady);
             console.log("App is ready, initializing share functionality");
             
-            // Initialize share functionality
-            initShareFunctionality();
+            // Initialize share functionality if not already initialized
+            if (!isInitialized) {
+                isInitialized = true;
+                initShareFunctionality();
+            }
         }
     }, 500);
     
@@ -28,8 +37,12 @@
         // Create share button
         createShareButton();
         
-        // Check URL for track ID
-        checkUrlForTrackId();
+        // Check URL for track ID - this needs to happen BEFORE the main script loads tracks
+        const sharedTrackId = checkUrlForTrackId();
+        if (sharedTrackId) {
+            // Set the flag to indicate we're handling a shared track
+            handlingSharedTrack = true;
+        }
         
         // Patch loadTrack to update URL
         patchLoadTrack();
@@ -217,52 +230,121 @@
         
         if (!trackId) {
             console.log("No track ID in URL");
-            return;
+            return null;
         }
         
         console.log("Found track ID in URL:", trackId);
         
-        // Make sure trackLoader is initialized
-        if (!trackLoader || !trackLoader.isInitialized) {
-            console.log("Waiting for track loader to initialize...");
-            
-            // Wait for tracks to load
-            const checkInterval = setInterval(() => {
-                if (trackLoader && trackLoader.isInitialized && 
-                    typeof tracks !== 'undefined' && tracks.length > 0) {
-                    clearInterval(checkInterval);
-                    loadSharedTrack(trackId);
-                }
-            }, 500);
-            
-            // Set a timeout to stop checking after 10 seconds
-            setTimeout(() => {
-                clearInterval(checkInterval);
-            }, 10000);
-        } else {
-            // Track loader is ready, load the track
+        // Set up a listener for the window load event
+        window.addEventListener('load', () => {
+            console.log("Window loaded, now trying to load the shared track");
+            // Make sure trackLoader is initialized before attempting to load track
+            waitForTrackLoader(trackId);
+        });
+        
+        // Also patch the initializeApp function in script.js to handle shared tracks
+        patchInitializeApp(trackId);
+        
+        return trackId;
+    }
+    
+    // Wait for track loader to initialize before loading a specific track
+    function waitForTrackLoader(trackId) {
+        console.log("Waiting for track loader to initialize...");
+        
+        // Check if track loader is already initialized
+        if (trackLoader && trackLoader.isInitialized && 
+            typeof tracks !== 'undefined' && tracks.length > 0) {
             loadSharedTrack(trackId);
+            return;
         }
+        
+        // Set up a polling interval to check when track loader is ready
+        const checkInterval = setInterval(() => {
+            if (trackLoader && trackLoader.isInitialized && 
+                typeof tracks !== 'undefined' && tracks.length > 0) {
+                clearInterval(checkInterval);
+                loadSharedTrack(trackId);
+            }
+        }, 500);
+        
+        // Set a timeout to stop checking after 10 seconds
+        setTimeout(() => {
+            clearInterval(checkInterval);
+            console.error("Timeout waiting for track loader to initialize");
+        }, 10000);
+    }
+    
+    // Patch the initializeApp function to handle shared tracks
+    function patchInitializeApp(trackId) {
+        if (typeof window.initializeApp !== 'function') {
+            console.log("initializeApp function not found, will try to intercept other initialization methods");
+            return;
+        }
+        
+        // Store the original function
+        const originalInitializeApp = window.initializeApp;
+        
+        // Replace with patched version
+        window.initializeApp = async function() {
+            console.log("Patched initializeApp called");
+            
+            // Call the original function
+            await originalInitializeApp.apply(this, arguments);
+            
+            // If we have a shared track, load it
+            if (trackId && handlingSharedTrack) {
+                console.log("Loading shared track from patched initializeApp");
+                setTimeout(() => loadSharedTrack(trackId), 500); // Small delay to ensure everything is ready
+            }
+        };
+        
+        console.log("Successfully patched initializeApp function");
     }
     
     // Load a shared track by ID
     function loadSharedTrack(trackId) {
         console.log("Attempting to load shared track:", trackId);
         
-        // Make sure we have the getTrackIndex method
+        // Make sure we don't keep trying to load the shared track multiple times
+        if (!handlingSharedTrack) {
+            console.log("Already handled the shared track, skipping");
+            return;
+        }
+        
+        // Reset the flag
+        handlingSharedTrack = false;
+        
+        // Add getTrackIndex method to trackLoader if not present
         if (!trackLoader.getTrackIndex) {
-            console.error("trackLoader.getTrackIndex method not found!");
-            // Try to add the method if not present
+            console.log("Adding getTrackIndex method to trackLoader");
             trackLoader.getTrackIndex = function(trackId) {
                 if (!this.isInitialized) {
                     console.error('Track loader not initialized. Call initialize() first.');
                     return -1;
                 }
                 
+                // Find the track in the original tracks list
                 const track = this.tracks.find(track => track.id === trackId);
-                if (!track) return -1;
+                if (!track) {
+                    console.error(`Track with ID ${trackId} not found in the original track list`);
+                    return -1;
+                }
                 
-                return this.tracks.indexOf(track);
+                // Check if the track is in the current playlist
+                const playlistIndex = tracks.findIndex(t => t.id === trackId);
+                if (playlistIndex !== -1) {
+                    console.log(`Track found in current playlist at index ${playlistIndex}`);
+                    return playlistIndex;
+                }
+                
+                // If not in current playlist, we need to add it
+                console.log("Track not found in current playlist, will try to add it");
+                
+                // Add the track to the beginning of the playlist
+                tracks.unshift(track);
+                console.log("Added shared track to the beginning of the playlist");
+                return 0; // The track is now at index 0
             };
         }
         
@@ -273,11 +355,26 @@
         if (trackIndex !== -1) {
             // Load the specific track
             if (typeof loadTrack === 'function') {
+                console.log("Loading shared track at index:", trackIndex);
                 loadTrack(trackIndex);
-                isPlaying = true;
-                if (typeof updatePlayPauseIcon === 'function') {
-                    updatePlayPauseIcon();
+                
+                // Auto-play the track
+                if (typeof audioPlayer !== 'undefined' && typeof updatePlayPauseIcon === 'function') {
+                    console.log("Attempting to auto-play the shared track");
+                    audioPlayer.play()
+                        .then(() => {
+                            isPlaying = true;
+                            updatePlayPauseIcon();
+                            console.log("Auto-play successful");
+                        })
+                        .catch(error => {
+                            console.error("Auto-play failed:", error);
+                            // Just update the icon to show play state, the user can click play manually
+                            isPlaying = false;
+                            updatePlayPauseIcon();
+                        });
                 }
+                
                 console.log("Shared track loaded successfully");
             } else {
                 console.error("loadTrack function not found");
@@ -309,13 +406,16 @@
             // Call the original function
             const result = originalLoadTrack.call(this, index);
             
-            // Update URL with track ID after a short delay
-            // (to ensure track loading has started)
-            setTimeout(() => {
-                if (typeof tracks !== 'undefined' && tracks[index] && tracks[index].id) {
-                    updateUrlWithTrackId(tracks[index].id);
-                }
-            }, 100);
+            // Skip URL update if we're handling a shared track (to avoid overwriting the URL)
+            if (!handlingSharedTrack) {
+                // Update URL with track ID after a short delay
+                // (to ensure track loading has started)
+                setTimeout(() => {
+                    if (typeof tracks !== 'undefined' && tracks[index] && tracks[index].id) {
+                        updateUrlWithTrackId(tracks[index].id);
+                    }
+                }, 100);
+            }
             
             return result;
         };
