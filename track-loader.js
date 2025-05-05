@@ -479,6 +479,31 @@ class TrackLoader {
                    region.includes(normalizedQuery);
         });
     }
+    
+    // NEW METHODS FOR TRACK SHARING FUNCTIONALITY
+    
+    // Get a track by its ID
+    getTrackById(trackId) {
+        if (!this.isInitialized) {
+            console.error('Track loader not initialized. Call initialize() first.');
+            return null;
+        }
+        
+        return this.tracks.find(track => track.id === trackId);
+    }
+    
+    // Get the index of a track by its ID
+    getTrackIndex(trackId) {
+        if (!this.isInitialized) {
+            console.error('Track loader not initialized. Call initialize() first.');
+            return -1;
+        }
+        
+        const track = this.getTrackById(trackId);
+        if (!track) return -1;
+        
+        return this.tracks.indexOf(track);
+    }
 }
 
 // Export the loader
