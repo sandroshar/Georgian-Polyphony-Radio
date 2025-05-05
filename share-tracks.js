@@ -1,4 +1,4 @@
-// share-tracks.js - Fixed version with proper URL handling
+// share-tracks.js - Fixed version with share button moved to left side
 // Add sharing functionality to the Georgian Polyphony Player
 
 (function() {
@@ -72,18 +72,13 @@
             return;
         }
         
-        // Insert between mute button and volume slider
-        const muteBtn = document.getElementById('mute-btn');
-        if (!muteBtn) {
-            console.error("Mute button not found");
-            controlsContainer.appendChild(shareBtn); // Append at the end if mute button not found
-        } else {
-            controlsContainer.insertBefore(shareBtn, muteBtn.nextSibling);
-        }
+        // Insert as the first button (leftmost position)
+        const firstButton = controlsContainer.firstChild;
+        controlsContainer.insertBefore(shareBtn, firstButton);
+        console.log("Share button created and added to the left side of the player controls");
         
         // Add click event listener
         shareBtn.addEventListener('click', copyShareLink);
-        console.log("Share button created and added to the player");
     }
     
     // Copy link to clipboard
@@ -441,6 +436,7 @@
                 align-items: center;
                 justify-content: center;
                 transition: all 0.3s ease;
+                margin-right: 15px; /* Add margin to separate from other buttons */
             }
             
             .share-btn:hover:not(:disabled) {
@@ -481,6 +477,7 @@
                 .share-btn {
                     width: 35px;
                     height: 35px;
+                    margin-right: 10px;
                 }
                 
                 .share-btn svg {
