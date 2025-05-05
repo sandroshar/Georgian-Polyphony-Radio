@@ -125,17 +125,29 @@ class TrackLoader {
                     
                     // Create proper audio URL with CloudFront domain and URL encoding
                     if (track.filepath && track.filename) {
-                        const pathParts = track.filepath.split('/');
-                        const collectionFolder = pathParts[0];
-                        
-                        // Check if it's the problematic Anania Erkomaishvili collection
+                        // MODIFIED SECTION - Improved handling for Anania Erkomaishvili collection
                         if (track.collection_id === 'col_17') {
                             // Special handling for Anania Erkomaishvili collection
-                            // Use the full filepath instead of just the collection folder + filename
-                            track.audioUrl = `${this.cloudFrontDomain}/audio/${encodeURIComponent(track.filepath)}`;
+                            // Log original values for debugging
+                            console.log('Anania track detected:', track.title);
+                            console.log('Original filepath:', track.filepath);
+                            
+                            // Remove problematic characters and simplify the path
+                            const collectionFolder = "Anania Erkomaishvili";
+                            // Use just the filename without any special characters
+                            const cleanFilename = track.filename
+                                .replace(/\s+\(\d+\)/g, '') // Remove numbers in parentheses
+                                .normalize('NFD') // Normalize to decomposed form
+                                .replace(/[\u0300-\u036f]/g, '') // Remove diacritics
+                                .replace(/[^\x00-\x7F]/g, ''); // Remove non-ASCII
+                            
+                            track.audioUrl = `${this.cloudFrontDomain}/audio/${encodeURIComponent(collectionFolder)}/${encodeURIComponent(cleanFilename)}`;
+                            console.log('New audio URL:', track.audioUrl);
                         } else {
-                            // For other collections: use folder + '/' + filename
-                            // Otherwise, use full filepath as is
+                            // For other collections: standard handling
+                            const pathParts = track.filepath.split('/');
+                            const collectionFolder = pathParts[0];
+                            
                             const audioPath = pathParts.length > 1 ? 
                                 `${encodeURIComponent(collectionFolder)}/${encodeURIComponent(track.filename)}` : 
                                 encodeURIComponent(track.filepath);
