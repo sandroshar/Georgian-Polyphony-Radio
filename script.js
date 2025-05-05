@@ -1,5 +1,5 @@
 // Georgian Polyphony Player - Main Script
-// Updated with improved track loader and error handling
+// Updated with fixed volume and filter button support
 
 // DOM Elements
 const audioPlayer = document.getElementById('audio-player');
@@ -7,6 +7,7 @@ const playPauseBtn = document.getElementById('play-pause-btn');
 const prevBtn = document.getElementById('prev-btn');
 const skipBtn = document.getElementById('skip-btn');
 const muteBtn = document.getElementById('mute-btn');
+const filterBtn = document.getElementById('filter-btn');
 const progressSlider = document.getElementById('progress-slider');
 const currentTimeDisplay = document.getElementById('current-time');
 const durationDisplay = document.getElementById('duration');
@@ -34,6 +35,7 @@ let isDraggingProgress = false;
 let consecutiveErrors = 0; // Count consecutive errors to prevent infinite loops
 const MAX_CONSECUTIVE_ERRORS = 5; // Maximum number of consecutive errors to try before stopping
 let isHandlingSharedTrack = false; // Flag for track sharing functionality
+const FIXED_VOLUME = 0.7; // Fixed volume at 70%
 
 // Create search results container
 function createSearchResultsContainer() {
@@ -138,12 +140,10 @@ function updateMuteIcon() {
     }
 }
 
-// Modified handleVolumeChange function - sets a fixed moderate volume
+// Handle volume - using fixed volume
 function handleVolumeChange() {
-    // We'll set a fixed default volume
-    audioPlayer.volume = 0.7;
+    audioPlayer.volume = FIXED_VOLUME;
     
-    // This is kept only for compatibility with existing code
     if (audioPlayer.muted) {
         audioPlayer.muted = false;
         updateMuteIcon();
@@ -314,6 +314,9 @@ function loadTrack(index) {
     // Start loading
     audioPlayer.load();
     
+    // Set fixed volume
+    audioPlayer.volume = FIXED_VOLUME;
+    
     // Update URL with track ID if not handling a shared track initially
     if (!isHandlingSharedTrack && track.id) {
         setTimeout(() => {
@@ -350,7 +353,7 @@ function setLoading(loading) {
     isLoading = loading;
     
     if (loadingIndicator) {
-        loadingIndicator.style.display = loading ? 'block' : 'none';
+        loadingIndicator.style.display = loading ? 'flex' : 'none';
     }
     
     if (trackInfo) {
@@ -459,6 +462,9 @@ function playPreviousTrack() {
         
         // Start loading
         audioPlayer.load();
+        
+        // Set fixed volume
+        audioPlayer.volume = FIXED_VOLUME;
         
         // Update URL with track ID
         if (track.id) {
@@ -711,8 +717,8 @@ searchInput.addEventListener('keyup', (e) => {
 
 // Initialize the application
 document.addEventListener('DOMContentLoaded', () => {
-    // Set initial volume - fixed moderate value
-    audioPlayer.volume = 0.7;
+    // Set fixed volume
+    audioPlayer.volume = FIXED_VOLUME;
     
     // Initialize app with track loader
     initializeApp();
@@ -759,7 +765,7 @@ function setupIOSAudioHandling() {
             iosNotice.remove();
             
             // Make sure audio is at proper volume and not muted
-            audioPlayer.volume = 0.7;
+            audioPlayer.volume = FIXED_VOLUME;
             audioPlayer.muted = false;
             updateMuteIcon();
             
@@ -774,4 +780,3 @@ function setupIOSAudioHandling() {
 }
 
 searchBtn.addEventListener('click', searchTracks);
-clearSearchBtn.addEventListener('click', clearSearch);
