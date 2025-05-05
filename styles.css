@@ -8,6 +8,9 @@
     --success-color: #2ecc71;
     --progress-bg: rgba(255, 255, 255, 0.2);
     --progress-fill: var(--accent-color);
+    --filter-panel-bg: #121212;
+    --filter-option-bg: rgba(255, 255, 255, 0.1);
+    --filter-option-active: rgba(230, 194, 0, 0.3);
 }
 
 * {
@@ -101,6 +104,13 @@ h2 {
     font-size: 1.8rem;
     margin-bottom: 5px;
     color: var(--accent-color);
+}
+
+h3 {
+    font-size: 1.2rem;
+    margin: 15px 0 10px;
+    color: var(--accent-color);
+    text-align: left;
 }
 
 .track-metadata {
@@ -204,7 +214,7 @@ button:disabled {
     cursor: not-allowed;
 }
 
-.play-btn, .mute-btn, .nav-btn, .share-btn {
+.play-btn, .mute-btn, .nav-btn, .share-btn, .filter-btn {
     width: 50px;
     height: 50px;
     border-radius: 50%;
@@ -217,17 +227,84 @@ button:disabled {
 .play-btn:hover:not(:disabled), 
 .mute-btn:hover:not(:disabled), 
 .nav-btn:hover:not(:disabled),
-.share-btn:hover:not(:disabled) {
+.share-btn:hover:not(:disabled),
+.filter-btn:hover:not(:disabled) {
     background-color: var(--button-hover);
 }
 
-.share-btn {
+.share-btn, .filter-btn {
     width: 40px;
     height: 40px;
 }
 
-.share-btn:active {
+.share-btn:active, .filter-btn:active {
     transform: scale(0.95);
+}
+
+/* Filter panel styles */
+.filter-panel {
+    background-color: var(--filter-panel-bg);
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 30px;
+    text-align: left;
+    display: none;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.filter-panel.active {
+    display: block;
+}
+
+.filter-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.filter-option {
+    background-color: var(--filter-option-bg);
+    padding: 8px 15px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.filter-option:hover {
+    background-color: rgba(255, 255, 255, 0.15);
+}
+
+.filter-option.active {
+    background-color: var(--filter-option-active);
+    color: var(--accent-color);
+}
+
+.filter-actions {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+.btn {
+    padding: 8px 15px;
+    border-radius: 20px;
+    background-color: rgba(255, 255, 255, 0.1);
+    color: var(--text-color);
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.btn:hover {
+    background-color: var(--accent-color);
+    color: #000;
+}
+
+/* Filter button animation */
+.filter-btn.active {
+    background-color: var(--accent-color);
+    color: #000;
 }
 
 footer {
@@ -404,13 +481,22 @@ body.debug-mode .debug-panel {
         margin-bottom: 15px;
     }
     
-    .share-btn {
+    .share-btn, .filter-btn {
         width: 35px;
         height: 35px;
     }
     
-    .share-btn svg {
+    .share-btn svg, .filter-btn svg {
         width: 18px;
         height: 18px;
+    }
+    
+    .filter-options {
+        gap: 8px;
+    }
+    
+    .filter-option {
+        padding: 6px 12px;
+        font-size: 0.8rem;
     }
 }
