@@ -1,6 +1,4 @@
-// Improved Track Loader for Georgian Polyphony Player
-// This module parses the comprehensive text database with track IDs
-// and ensures balanced representation across collections
+// track-loader.js with Anania Erkomaishvili special handling removed
 
 class TrackLoader {
     constructor() {
@@ -125,35 +123,14 @@ class TrackLoader {
                     
                     // Create proper audio URL with CloudFront domain and URL encoding
                     if (track.filepath && track.filename) {
-                        // MODIFIED SECTION - Improved handling for Anania Erkomaishvili collection
-                        if (track.collection_id === 'col_17') {
-                            // Special handling for Anania Erkomaishvili collection
-                            // Log original values for debugging
-                            console.log('Anania track detected:', track.title);
-                            console.log('Original filepath:', track.filepath);
+                        const pathParts = track.filepath.split('/');
+                        const collectionFolder = pathParts[0];
+                        
+                        const audioPath = pathParts.length > 1 ? 
+                            `${encodeURIComponent(collectionFolder)}/${encodeURIComponent(track.filename)}` : 
+                            encodeURIComponent(track.filepath);
                             
-                            // Remove problematic characters and simplify the path
-                            const collectionFolder = "Anania Erkomaishvili";
-                            // Use just the filename without any special characters
-                            const cleanFilename = track.filename
-                                .replace(/\s+\(\d+\)/g, '') // Remove numbers in parentheses
-                                .normalize('NFD') // Normalize to decomposed form
-                                .replace(/[\u0300-\u036f]/g, '') // Remove diacritics
-                                .replace(/[^\x00-\x7F]/g, ''); // Remove non-ASCII
-                            
-                            track.audioUrl = `${this.cloudFrontDomain}/audio/${encodeURIComponent(collectionFolder)}/${encodeURIComponent(cleanFilename)}`;
-                            console.log('New audio URL:', track.audioUrl);
-                        } else {
-                            // For other collections: standard handling
-                            const pathParts = track.filepath.split('/');
-                            const collectionFolder = pathParts[0];
-                            
-                            const audioPath = pathParts.length > 1 ? 
-                                `${encodeURIComponent(collectionFolder)}/${encodeURIComponent(track.filename)}` : 
-                                encodeURIComponent(track.filepath);
-                                
-                            track.audioUrl = `${this.cloudFrontDomain}/audio/${audioPath}`;
-                        }
+                        track.audioUrl = `${this.cloudFrontDomain}/audio/${audioPath}`;
                     } else {
                         // Skip tracks with missing filepath or filename
                         console.warn(`Skipping track with missing filepath or filename: ${track.id} - ${track.title}`);
