@@ -34,6 +34,7 @@ let isSearchActive = false;
 let isDraggingProgress = false;
 let consecutiveErrors = 0; // Count consecutive errors to prevent infinite loops
 const MAX_CONSECUTIVE_ERRORS = 5; // Maximum number of consecutive errors to try before stopping
+let isHandlingSharedTrack = false; // Flag for track sharing functionality
 
 // Create search results container
 function createSearchResultsContainer() {
@@ -303,6 +304,27 @@ function loadTrack(index) {
     
     // Start loading
     audioPlayer.load();
+    
+    // Update URL with track ID if not handling a shared track initially
+    if (!isHandlingSharedTrack && track.id) {
+        setTimeout(() => {
+            updateUrlWithTrackId(track.id);
+        }, 100);
+    }
+}
+
+// Helper function to update URL with track ID
+function updateUrlWithTrackId(trackId) {
+    const url = new URL(window.location.href);
+    url.searchParams.set('track', trackId);
+    
+    // Replace current URL without reloading the page
+    try {
+        window.history.replaceState({}, '', url.toString());
+        console.log("URL updated with track ID:", trackId);
+    } catch (e) {
+        console.error("Error updating URL:", e);
+    }
 }
 
 // Update navigation button states
@@ -428,6 +450,13 @@ function playPreviousTrack() {
         
         // Start loading
         audioPlayer.load();
+        
+        // Update URL with track ID
+        if (track.id) {
+            setTimeout(() => {
+                updateUrlWithTrackId(track.id);
+            }, 100);
+        }
     }
 }
 
@@ -526,11 +555,25 @@ function clearSearch() {
     updateNavigationButtons();
 }
 
+// Get a track by ID from the current playlist
+function getTrackByIdFromCurrentPlaylist(trackId) {
+    return tracks.findIndex(track => track.id === trackId);
+}
+
 // Initialize the application with the track loader
 async function initializeApp() {
     setLoading(true);
     
     try {
+        // Check for shared track ID in URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const sharedTrackId = urlParams.get('track');
+        
+        if (sharedTrackId) {
+            console.log('Found shared track ID in URL:', sharedTrackId);
+            isHandlingSharedTrack = true;
+        }
+        
         // Initialize the track loader
         const initialized = await trackLoader.initialize();
         
@@ -542,6 +585,49 @@ async function initializeApp() {
         // Get all tracks
         originalTracks = trackLoader.getAllTracks();
         
+        // If we have a shared track ID, find the corresponding track
+        if (isHandlingSharedTrack && sharedTrackId) {
+            // Find the shared track
+            const sharedTrack = trackLoader.getTrackById(sharedTrackId);
+            
+            if (sharedTrack) {
+                // Create a playlist with the shared track first
+                const collection = trackLoader.getTracksFromCollection(sharedTrack.collection_id);
+                const otherTracks = trackLoader.getFilteredShuffledPlaylist()
+                    .filter(track => track.id !== sharedTrackId);
+                
+                // Combine the shared track with other tracks
+                tracks = [sharedTrack, ...otherTracks];
+                
+                console.log(`Loaded shared track '${sharedTrack.title}' and ${tracks.length - 1} other tracks`);
+                
+                // Load the shared track (index 0)
+                loadTrack(0);
+                
+                // Try to auto-play the track
+                isPlaying = true;
+                updatePlayPauseIcon();
+                audioPlayer.play().catch(error => {
+                    console.error('Error auto-playing shared track:', error);
+                    isPlaying = false;
+                    updatePlayPauseIcon();
+                });
+                
+                // Reset the shared track flag
+                isHandlingSharedTrack = false;
+                
+                // Update navigation buttons
+                updateNavigationButtons();
+                return;
+            } else {
+                console.warn(`Shared track with ID ${sharedTrackId} not found`);
+                showErrorMessage('The shared track could not be found.');
+                // Continue with normal initialization
+                isHandlingSharedTrack = false;
+            }
+        }
+        
+        // Normal initialization (when no shared track or shared track not found)
         // Use filtered collection-based shuffling to reduce errors
         tracks = trackLoader.getFilteredShuffledPlaylist();
         
