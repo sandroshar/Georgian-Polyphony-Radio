@@ -7,7 +7,6 @@ const playPauseBtn = document.getElementById('play-pause-btn');
 const prevBtn = document.getElementById('prev-btn');
 const skipBtn = document.getElementById('skip-btn');
 const muteBtn = document.getElementById('mute-btn');
-const volumeControl = document.getElementById('volume-control');
 const progressSlider = document.getElementById('progress-slider');
 const currentTimeDisplay = document.getElementById('current-time');
 const durationDisplay = document.getElementById('duration');
@@ -123,10 +122,8 @@ function updateMuteIcon() {
         muteBtn.innerHTML = `
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
                 <path fill="none" d="M0 0h24v24H0z"/>
-                <path d="M3 9v6h4l5 5V4L7 9H3z" fill="currentColor"/>
                 <path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63z" fill="currentColor"/>
-                <path d="M19 12c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71z" fill="currentColor"/>
-                <path d="M4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z" fill="currentColor"/>
+                <path d="M19 12c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z" fill="currentColor"/>
             </svg>
         `;
     } else {
@@ -138,6 +135,18 @@ function updateMuteIcon() {
                 <path d="M14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z" fill="currentColor"/>
             </svg>
         `;
+    }
+}
+
+// Modified handleVolumeChange function - sets a fixed moderate volume
+function handleVolumeChange() {
+    // We'll set a fixed default volume
+    audioPlayer.volume = 0.7;
+    
+    // This is kept only for compatibility with existing code
+    if (audioPlayer.muted) {
+        audioPlayer.muted = false;
+        updateMuteIcon();
     }
 }
 
@@ -460,17 +469,6 @@ function playPreviousTrack() {
     }
 }
 
-// Update volume
-function handleVolumeChange() {
-    audioPlayer.volume = volumeControl.value / 100;
-    
-    // Unmute if volume is adjusted while muted
-    if (audioPlayer.muted && audioPlayer.volume > 0) {
-        audioPlayer.muted = false;
-        updateMuteIcon();
-    }
-}
-
 // Search tracks
 function searchTracks() {
     const query = searchInput.value.trim();
@@ -678,7 +676,6 @@ playPauseBtn.addEventListener('click', togglePlay);
 prevBtn.addEventListener('click', playPreviousTrack);
 skipBtn.addEventListener('click', skipToNextTrack);
 muteBtn.addEventListener('click', toggleMute);
-volumeControl.addEventListener('input', handleVolumeChange);
 
 // FIXED PROGRESS BAR FUNCTIONALITY
 // Single click on progress bar - jump to that position immediately
@@ -714,8 +711,8 @@ searchInput.addEventListener('keyup', (e) => {
 
 // Initialize the application
 document.addEventListener('DOMContentLoaded', () => {
-    // Set initial volume
-    audioPlayer.volume = volumeControl.value / 100;
+    // Set initial volume - fixed moderate value
+    audioPlayer.volume = 0.7;
     
     // Initialize app with track loader
     initializeApp();
@@ -760,6 +757,11 @@ function setupIOSAudioHandling() {
             
             // Remove the notice
             iosNotice.remove();
+            
+            // Make sure audio is at proper volume and not muted
+            audioPlayer.volume = 0.7;
+            audioPlayer.muted = false;
+            updateMuteIcon();
             
             // Try to play audio if it's in playing state
             if (isPlaying && audioPlayer.paused) {
