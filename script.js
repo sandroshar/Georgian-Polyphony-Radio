@@ -860,8 +860,11 @@ function applyFilters() {
                     activeFilters.yearRange.min > 1900 || 
                     activeFilters.yearRange.max < 2025);
     
-    // Update the global tracks array
-    tracks = filteredTracks;
+    // Shuffle the filtered tracks - THIS IS THE CHANGE
+    const shuffledFilteredTracks = shuffleArray([...filteredTracks]);
+    
+    // Update the global tracks array with shuffled filtered tracks
+    tracks = shuffledFilteredTracks;
     
     // Load the first track of the filtered list
     loadTrack(0);
@@ -878,6 +881,16 @@ function applyFilters() {
     
     // Show feedback to the user about how many tracks are in the filtered list
     showSuccessMessage(`Found ${filteredTracks.length} tracks matching your filters.`);
+}
+
+// Shuffle helper function using Fisher-Yates algorithm
+function shuffleArray(array) {
+    const shuffled = [...array];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    return shuffled;
 }
 
 // Reset all filters
