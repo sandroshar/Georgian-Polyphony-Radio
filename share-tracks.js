@@ -1,4 +1,4 @@
-// share-tracks.js - Fixed version with share button moved to left side
+// share-tracks.js - Fixed version with proper share button size
 // Add sharing functionality to the Georgian Polyphony Player
 
 (function() {
@@ -56,10 +56,10 @@
         // Create the button
         const shareBtn = document.createElement('button');
         shareBtn.id = 'share-btn';
-        shareBtn.className = 'share-btn';
+        shareBtn.className = 'nav-btn share-btn'; // Update to use nav-btn class instead of custom share-btn
         shareBtn.title = 'Copy link to this track';
         shareBtn.innerHTML = `
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
                 <path fill="none" d="M0 0h24v24H0z"/>
                 <path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z" fill="currentColor"/>
             </svg>
@@ -426,29 +426,7 @@
         const style = document.createElement('style');
         style.setAttribute('data-share-styles', 'true');
         style.textContent = `
-            /* Share button styling */
-            .share-btn {
-                width: 40px;
-                height: 40px;
-                border-radius: 50%;
-                background-color: rgba(255, 255, 255, 0.1);
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                transition: all 0.3s ease;
-                margin-right: 15px; /* Add margin to separate from other buttons */
-            }
-            
-            .share-btn:hover:not(:disabled) {
-                background-color: var(--button-hover, #333333);
-                color: var(--accent-color, #e6c200);
-            }
-            
-            .share-btn:active {
-                transform: scale(0.95);
-            }
-            
-            /* Success message */
+            /* Share success message */
             .share-success {
                 background-color: rgba(46, 204, 113, 0.2);
                 color: #2ecc71;
