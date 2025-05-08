@@ -121,7 +121,7 @@
         });
     }
     
-    // Function to populate year range slider
+    // Function to populate year range slider - FIXED VERSION
     function populateYearRangeSlider(minYear, maxYear) {
         // Clear previous content
         yearRangeContainer.innerHTML = '';
@@ -133,158 +133,62 @@
         const sliderContainer = document.createElement('div');
         sliderContainer.className = 'year-slider-container';
         
-        // Create the slider element
-        const rangeSlider = document.createElement('div');
-        rangeSlider.className = 'year-range-slider';
-        rangeSlider.setAttribute('data-min', minYear);
-        rangeSlider.setAttribute('data-max', maxYear);
+        const minYearDisplay = document.createElement('span');
+        minYearDisplay.className = 'year-display min-year';
+        minYearDisplay.textContent = activeFilters.yearRange.min;
         
-        // Create the connect element for the colored range
-        const connectElement = document.createElement('div');
-        connectElement.className = 'year-slider-connect';
+        const maxYearDisplay = document.createElement('span');
+        maxYearDisplay.className = 'year-display max-year';
+        maxYearDisplay.textContent = activeFilters.yearRange.max;
         
-        // Create the min and max handles
-        const minHandle = document.createElement('div');
-        minHandle.className = 'year-slider-handle min-handle';
-        minHandle.setAttribute('role', 'slider');
+        // Create min slider
+        const minSlider = document.createElement('input');
+        minSlider.type = 'range';
+        minSlider.min = minYear;
+        minSlider.max = maxYear;
+        minSlider.value = activeFilters.yearRange.min;
+        minSlider.className = 'year-slider min-slider';
         
-        const maxHandle = document.createElement('div');
-        maxHandle.className = 'year-slider-handle max-handle';
-        maxHandle.setAttribute('role', 'slider');
+        // Create max slider
+        const maxSlider = document.createElement('input');
+        maxSlider.type = 'range';
+        maxSlider.min = minYear;
+        maxSlider.max = maxYear;
+        maxSlider.value = activeFilters.yearRange.max;
+        maxSlider.className = 'year-slider max-slider';
         
-        // Create tooltips container
-        const tooltipsContainer = document.createElement('div');
-        tooltipsContainer.className = 'year-slider-tooltips';
+        // Add event listeners
+        minSlider.addEventListener('input', () => {
+            // Ensure min value doesn't exceed max value
+            if (parseInt(minSlider.value) > parseInt(maxSlider.value)) {
+                minSlider.value = maxSlider.value;
+            }
+            
+            activeFilters.yearRange.min = parseInt(minSlider.value);
+            minYearDisplay.textContent = minSlider.value;
+        });
         
-        const minTooltip = document.createElement('span');
-        minTooltip.className = 'year-slider-tooltip min-tooltip';
-        minTooltip.textContent = activeFilters.yearRange.min;
+        maxSlider.addEventListener('input', () => {
+            // Ensure max value doesn't go below min value
+            if (parseInt(maxSlider.value) < parseInt(minSlider.value)) {
+                maxSlider.value = minSlider.value;
+            }
+            
+            activeFilters.yearRange.max = parseInt(maxSlider.value);
+            maxYearDisplay.textContent = maxSlider.value;
+        });
         
-        const maxTooltip = document.createElement('span');
-        maxTooltip.className = 'year-slider-tooltip max-tooltip';
-        maxTooltip.textContent = activeFilters.yearRange.max;
-        
-        // Add elements to the DOM
-        rangeSlider.appendChild(connectElement);
-        rangeSlider.appendChild(minHandle);
-        rangeSlider.appendChild(maxHandle);
-        tooltipsContainer.appendChild(minTooltip);
-        tooltipsContainer.appendChild(maxTooltip);
-        
-        sliderContainer.appendChild(rangeSlider);
-        sliderContainer.appendChild(tooltipsContainer);
+        // Append elements to container
+        sliderContainer.appendChild(minYearDisplay);
+        sliderContainer.appendChild(minSlider);
+        sliderContainer.appendChild(maxSlider);
+        sliderContainer.appendChild(maxYearDisplay);
         
         yearRangeContainer.appendChild(yearSliderLabel);
         yearRangeContainer.appendChild(sliderContainer);
         
-        // Initialize slider state
-        updateSliderPositions();
-        
-        // Set up event listeners for drag functionality
-        setupHandleDrag(minHandle, 'min', minTooltip);
-        setupHandleDrag(maxHandle, 'max', maxTooltip);
-    }
-    
-    // Update slider positions based on current values
-    function updateSliderPositions() {
-        const rangeSlider = document.querySelector('.year-range-slider');
-        const minHandle = document.querySelector('.min-handle');
-        const maxHandle = document.querySelector('.max-handle');
-        const connectElement = document.querySelector('.year-slider-connect');
-        
-        if (!rangeSlider || !minHandle || !maxHandle || !connectElement) return;
-        
-        const sliderWidth = rangeSlider.offsetWidth;
-        const minYear = parseInt(rangeSlider.getAttribute('data-min')) || 1900;
-        const maxYear = parseInt(rangeSlider.getAttribute('data-max')) || 2025;
-        const range = maxYear - minYear;
-        
-        // Calculate positions as percentages
-        const minPos = ((activeFilters.yearRange.min - minYear) / range) * 100;
-        const maxPos = ((activeFilters.yearRange.max - minYear) / range) * 100;
-        
-        // Update handles positions
-        minHandle.style.left = `${minPos}%`;
-        maxHandle.style.left = `${maxPos}%`;
-        
-        // Update connect element
-        connectElement.style.left = `${minPos}%`;
-        connectElement.style.width = `${maxPos - minPos}%`;
-        
-        // Update tooltips
-        const minTooltip = document.querySelector('.min-tooltip');
-        const maxTooltip = document.querySelector('.max-tooltip');
-        
-        if (minTooltip) minTooltip.textContent = activeFilters.yearRange.min;
-        if (maxTooltip) maxTooltip.textContent = activeFilters.yearRange.max;
-    }
-    
-    // Setup drag for a specific handle
-    function setupHandleDrag(handle, type, tooltip) {
-        let isDragging = false;
-        
-        handle.addEventListener('mousedown', startDrag);
-        handle.addEventListener('touchstart', startDrag, { passive: false });
-        
-        function startDrag(e) {
-            e.preventDefault && e.preventDefault();
-            isDragging = true;
-            
-            document.addEventListener('mousemove', drag);
-            document.addEventListener('touchmove', drag, { passive: false });
-            document.addEventListener('mouseup', stopDrag);
-            document.addEventListener('touchend', stopDrag);
-        }
-        
-        function drag(e) {
-            if (!isDragging) return;
-            
-            e.preventDefault && e.preventDefault();
-            
-            const rangeSlider = document.querySelector('.year-range-slider');
-            const rect = rangeSlider.getBoundingClientRect();
-            const sliderWidth = rect.width;
-            
-            // Get the position relative to the slider
-            let clientX;
-            if (e.type === 'touchmove') {
-                clientX = e.touches[0].clientX;
-            } else {
-                clientX = e.clientX;
-            }
-            
-            let position = clientX - rect.left;
-            position = Math.max(0, Math.min(position, sliderWidth));
-            
-            // Convert position to percentage
-            const percentage = position / sliderWidth;
-            
-            // Calculate year value based on percentage
-            const minYear = parseInt(rangeSlider.getAttribute('data-min')) || 1900;
-            const maxYear = parseInt(rangeSlider.getAttribute('data-max')) || 2025;
-            const range = maxYear - minYear;
-            const year = Math.round(minYear + percentage * range);
-            
-            // Update the appropriate range value based on handle type
-            if (type === 'min') {
-                // Ensure min doesn't exceed max
-                activeFilters.yearRange.min = Math.min(year, activeFilters.yearRange.max);
-            } else {
-                // Ensure max doesn't go below min
-                activeFilters.yearRange.max = Math.max(year, activeFilters.yearRange.min);
-            }
-            
-            // Update the slider visually
-            updateSliderPositions();
-        }
-        
-        function stopDrag() {
-            isDragging = false;
-            document.removeEventListener('mousemove', drag);
-            document.removeEventListener('touchmove', drag);
-            document.removeEventListener('mouseup', stopDrag);
-            document.removeEventListener('touchend', stopDrag);
-        }
+        // Add custom CSS to fix the slider appearance
+        addSliderStyles();
     }
     
     // Toggle region filter
@@ -341,8 +245,11 @@
                        activeFilters.yearRange.min > 1900 || 
                        activeFilters.yearRange.max < 2025);
         
+        // Shuffle the filtered tracks
+        const shuffledFilteredTracks = shuffleArray([...filteredTracks]);
+        
         // Update the global tracks array
-        tracks = filteredTracks;
+        tracks = shuffledFilteredTracks;
         
         // Load the first track of the filtered list
         loadTrack(0);
@@ -355,10 +262,22 @@
         updateFilterButtonState();
         
         // Update clear button state
-        updateClearButtonState();
+        if (typeof updateClearButtonState === 'function') {
+            updateClearButtonState();
+        }
         
         // Show feedback to the user about how many tracks are in the filtered list
         showFilterFeedback(filteredTracks.length);
+    }
+    
+    // Shuffle helper function using Fisher-Yates algorithm
+    function shuffleArray(array) {
+        const shuffled = [...array];
+        for (let i = shuffled.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+        }
+        return shuffled;
     }
     
     // Reset all filters
@@ -371,8 +290,8 @@
         const filterOptions = document.querySelectorAll('.filter-option');
         filterOptions.forEach(option => option.classList.remove('active'));
         
-        // Update the slider UI
-        updateSliderPositions();
+        // Repopulate the filter options to reset the slider UI
+        populateFilterOptions();
         
         // If we're already in a filtered state, reset to the full playlist
         if (isFilterActive) {
@@ -428,6 +347,33 @@
         }
     }
     
+    // Function to show error message
+    function showErrorMessage(message) {
+        // Check if there's already an existing global showErrorMessage function
+        if (typeof window.showErrorMessage === 'function') {
+            window.showErrorMessage(message);
+            return;
+        }
+        
+        // Create error message element
+        const errorElement = document.createElement('div');
+        errorElement.className = 'audio-error';
+        errorElement.textContent = message;
+        
+        // Add to player container
+        const playerContainer = document.querySelector('.player-container');
+        if (playerContainer) {
+            playerContainer.appendChild(errorElement);
+            
+            // Auto-remove after 5 seconds
+            setTimeout(() => {
+                if (errorElement.parentNode) {
+                    errorElement.remove();
+                }
+            }, 5000);
+        }
+    }
+    
     // Update filter button state
     function updateFilterButtonState() {
         if (isFilterActive) {
@@ -468,6 +414,97 @@
             }
         }
     });
+    
+    // Add custom CSS specifically for the slider
+    function addSliderStyles() {
+        // Check if slider styles already exist
+        if (document.querySelector('style[data-slider-styles="true"]')) {
+            return;
+        }
+        
+        const style = document.createElement('style');
+        style.setAttribute('data-slider-styles', 'true');
+        style.textContent = `
+            /* Fixed Year Range Slider */
+            .year-slider-container {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                margin: 15px 0;
+                width: 100%;
+            }
+            
+            .year-display {
+                min-width: 40px;
+                text-align: center;
+                background-color: rgba(255, 255, 255, 0.1);
+                color: var(--accent-color);
+                padding: 3px 8px;
+                border-radius: 10px;
+                font-size: 0.8rem;
+                margin: 0 10px;
+            }
+            
+            .min-slider, .max-slider {
+                -webkit-appearance: none;
+                appearance: none;
+                height: 5px;
+                background: rgba(255, 255, 255, 0.2);
+                outline: none;
+                border-radius: 5px;
+                width: 40%;
+                flex-grow: 1;
+                margin: 0 5px;
+            }
+            
+            .min-slider::-webkit-slider-thumb, .max-slider::-webkit-slider-thumb {
+                -webkit-appearance: none;
+                appearance: none;
+                width: 16px;
+                height: 16px;
+                border-radius: 50%;
+                background: var(--accent-color);
+                cursor: pointer;
+                transition: transform 0.1s ease;
+            }
+            
+            .min-slider::-moz-range-thumb, .max-slider::-moz-range-thumb {
+                width: 16px;
+                height: 16px;
+                border-radius: 50%;
+                background: var(--accent-color);
+                cursor: pointer;
+                border: none;
+                transition: transform 0.1s ease;
+            }
+            
+            .min-slider::-webkit-slider-thumb:hover, .max-slider::-webkit-slider-thumb:hover {
+                transform: scale(1.1);
+            }
+            
+            .min-slider::-moz-range-thumb:hover, .max-slider::-moz-range-thumb:hover {
+                transform: scale(1.1);
+            }
+            
+            /* Responsive adjustments */
+            @media (max-width: 600px) {
+                .year-slider-container {
+                    flex-wrap: wrap;
+                }
+                
+                .min-slider, .max-slider {
+                    width: 35%;
+                }
+                
+                .year-display {
+                    margin: 0 5px;
+                    min-width: 35px;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+        console.log("Slider styles added");
+    }
     
     // Add CSS styles if not present
     function addStyles() {
@@ -516,66 +553,6 @@
             
             .filter-indicator {
                 animation: pulse 1.5s infinite;
-            }
-            
-            /* Year slider improvements */
-            .year-slider-container {
-                position: relative;
-                padding: 15px 10px 0;
-                margin-top: 15px;
-            }
-            
-            .year-range-slider {
-                position: relative;
-                height: 6px;
-                background-color: rgba(255, 255, 255, 0.2);
-                border-radius: 3px;
-                margin: 15px 0;
-            }
-            
-            .year-slider-connect {
-                position: absolute;
-                top: 0;
-                height: 100%;
-                background-color: var(--accent-color);
-                border-radius: 3px;
-                z-index: 1;
-            }
-            
-            .year-slider-handle {
-                position: absolute;
-                top: 50%;
-                width: 16px;
-                height: 16px;
-                background-color: var(--accent-color);
-                border-radius: 50%;
-                transform: translate(-50%, -50%);
-                cursor: pointer;
-                z-index: 2;
-                box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
-                transition: transform 0.1s ease;
-            }
-            
-            .year-slider-handle:hover {
-                transform: translate(-50%, -50%) scale(1.1);
-            }
-            
-            .year-slider-handle:active {
-                transform: translate(-50%, -50%) scale(1.2);
-            }
-            
-            .year-slider-tooltips {
-                display: flex;
-                justify-content: space-between;
-                margin-top: 10px;
-            }
-            
-            .year-slider-tooltip {
-                background-color: rgba(255, 255, 255, 0.1);
-                color: var(--accent-color);
-                padding: 3px 8px;
-                border-radius: 10px;
-                font-size: 0.8rem;
             }
         `;
         document.head.appendChild(style);
