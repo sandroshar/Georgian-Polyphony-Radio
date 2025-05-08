@@ -1,19 +1,18 @@
-
 // filter-tracks.js - Filtering functionality for Georgian Polyphony Player
-// Adds region and collection filtering options
+// Adds region and collection filtering options with improved year range slider
 
 (function() {
     // Global state for filters
     const activeFilters = {
         regions: [],
-        collections: []
+        yearRange: { min: 1900, max: 2025 }
     };
     
     // DOM elements
     const filterBtn = document.getElementById('filter-btn');
     const filterPanel = document.getElementById('filter-panel');
     const regionFiltersContainer = document.getElementById('region-filters');
-    const collectionFiltersContainer = document.getElementById('collection-filters');
+    const yearRangeContainer = document.getElementById('year-range-container');
     const applyFiltersBtn = document.getElementById('apply-filters-btn');
     const resetFiltersBtn = document.getElementById('reset-filters-btn');
     
@@ -85,67 +84,222 @@
             .filter(region => region && region.trim() !== '')
         )].sort();
         
-        // Extract unique collections
-        const collections = [...new Set(allTracks
-            .map(track => track.collection_name)
-            .filter(collection => collection && collection.trim() !== '')
-        )].sort();
+        // Extract year range
+        const years = allTracks
+            .map(track => parseInt(track.year))
+            .filter(year => !isNaN(year));
+        
+        const minYear = Math.min(...years) || 1900;
+        const maxYear = Math.max(...years) || 2025;
         
         // Populate region filters
-        populateFilterSection(regionFiltersContainer, regions, 'region', activeFilters.regions);
+        populateRegionFilters(regions);
         
-        // Populate collection filters
-        populateFilterSection(collectionFiltersContainer, collections, 'collection', activeFilters.collections);
+        // Populate year range slider
+        populateYearRangeSlider(minYear, maxYear);
     }
     
-    // Helper function to populate a filter section
-    function populateFilterSection(container, options, type, activeOptions) {
+    // Populate region filters
+    function populateRegionFilters(regions) {
         // Clear previous options
-        container.innerHTML = '';
+        regionFiltersContainer.innerHTML = '';
         
         // Add filter options
-        options.forEach(option => {
+        regions.forEach(region => {
             const optionElement = document.createElement('div');
             optionElement.className = 'filter-option';
-            if (activeOptions.includes(option)) {
+            if (activeFilters.regions.includes(region)) {
                 optionElement.classList.add('active');
             }
-            optionElement.dataset.value = option;
-            optionElement.dataset.type = type;
-            optionElement.textContent = option;
+            optionElement.dataset.value = region;
+            optionElement.textContent = region;
             
             // Add click event listener
-            optionElement.addEventListener('click', toggleFilterOption);
+            optionElement.addEventListener('click', toggleRegionFilter);
             
-            container.appendChild(optionElement);
+            regionFiltersContainer.appendChild(optionElement);
         });
     }
     
-    // Toggle selection of a filter option
-    function toggleFilterOption(event) {
+    // Function to populate year range slider
+    function populateYearRangeSlider(minYear, maxYear) {
+        // Clear previous content
+        yearRangeContainer.innerHTML = '';
+        
+        // Create year range slider elements
+        const yearSliderLabel = document.createElement('h3');
+        yearSliderLabel.textContent = 'Filter by Year Range';
+        
+        const sliderContainer = document.createElement('div');
+        sliderContainer.className = 'year-slider-container';
+        
+        // Create the slider element
+        const rangeSlider = document.createElement('div');
+        rangeSlider.className = 'year-range-slider';
+        rangeSlider.setAttribute('data-min', minYear);
+        rangeSlider.setAttribute('data-max', maxYear);
+        
+        // Create the connect element for the colored range
+        const connectElement = document.createElement('div');
+        connectElement.className = 'year-slider-connect';
+        
+        // Create the min and max handles
+        const minHandle = document.createElement('div');
+        minHandle.className = 'year-slider-handle min-handle';
+        minHandle.setAttribute('role', 'slider');
+        
+        const maxHandle = document.createElement('div');
+        maxHandle.className = 'year-slider-handle max-handle';
+        maxHandle.setAttribute('role', 'slider');
+        
+        // Create tooltips container
+        const tooltipsContainer = document.createElement('div');
+        tooltipsContainer.className = 'year-slider-tooltips';
+        
+        const minTooltip = document.createElement('span');
+        minTooltip.className = 'year-slider-tooltip min-tooltip';
+        minTooltip.textContent = activeFilters.yearRange.min;
+        
+        const maxTooltip = document.createElement('span');
+        maxTooltip.className = 'year-slider-tooltip max-tooltip';
+        maxTooltip.textContent = activeFilters.yearRange.max;
+        
+        // Add elements to the DOM
+        rangeSlider.appendChild(connectElement);
+        rangeSlider.appendChild(minHandle);
+        rangeSlider.appendChild(maxHandle);
+        tooltipsContainer.appendChild(minTooltip);
+        tooltipsContainer.appendChild(maxTooltip);
+        
+        sliderContainer.appendChild(rangeSlider);
+        sliderContainer.appendChild(tooltipsContainer);
+        
+        yearRangeContainer.appendChild(yearSliderLabel);
+        yearRangeContainer.appendChild(sliderContainer);
+        
+        // Initialize slider state
+        updateSliderPositions();
+        
+        // Set up event listeners for drag functionality
+        setupHandleDrag(minHandle, 'min', minTooltip);
+        setupHandleDrag(maxHandle, 'max', maxTooltip);
+    }
+    
+    // Update slider positions based on current values
+    function updateSliderPositions() {
+        const rangeSlider = document.querySelector('.year-range-slider');
+        const minHandle = document.querySelector('.min-handle');
+        const maxHandle = document.querySelector('.max-handle');
+        const connectElement = document.querySelector('.year-slider-connect');
+        
+        if (!rangeSlider || !minHandle || !maxHandle || !connectElement) return;
+        
+        const sliderWidth = rangeSlider.offsetWidth;
+        const minYear = parseInt(rangeSlider.getAttribute('data-min')) || 1900;
+        const maxYear = parseInt(rangeSlider.getAttribute('data-max')) || 2025;
+        const range = maxYear - minYear;
+        
+        // Calculate positions as percentages
+        const minPos = ((activeFilters.yearRange.min - minYear) / range) * 100;
+        const maxPos = ((activeFilters.yearRange.max - minYear) / range) * 100;
+        
+        // Update handles positions
+        minHandle.style.left = `${minPos}%`;
+        maxHandle.style.left = `${maxPos}%`;
+        
+        // Update connect element
+        connectElement.style.left = `${minPos}%`;
+        connectElement.style.width = `${maxPos - minPos}%`;
+        
+        // Update tooltips
+        const minTooltip = document.querySelector('.min-tooltip');
+        const maxTooltip = document.querySelector('.max-tooltip');
+        
+        if (minTooltip) minTooltip.textContent = activeFilters.yearRange.min;
+        if (maxTooltip) maxTooltip.textContent = activeFilters.yearRange.max;
+    }
+    
+    // Setup drag for a specific handle
+    function setupHandleDrag(handle, type, tooltip) {
+        let isDragging = false;
+        
+        handle.addEventListener('mousedown', startDrag);
+        handle.addEventListener('touchstart', startDrag, { passive: false });
+        
+        function startDrag(e) {
+            e.preventDefault && e.preventDefault();
+            isDragging = true;
+            
+            document.addEventListener('mousemove', drag);
+            document.addEventListener('touchmove', drag, { passive: false });
+            document.addEventListener('mouseup', stopDrag);
+            document.addEventListener('touchend', stopDrag);
+        }
+        
+        function drag(e) {
+            if (!isDragging) return;
+            
+            e.preventDefault && e.preventDefault();
+            
+            const rangeSlider = document.querySelector('.year-range-slider');
+            const rect = rangeSlider.getBoundingClientRect();
+            const sliderWidth = rect.width;
+            
+            // Get the position relative to the slider
+            let clientX;
+            if (e.type === 'touchmove') {
+                clientX = e.touches[0].clientX;
+            } else {
+                clientX = e.clientX;
+            }
+            
+            let position = clientX - rect.left;
+            position = Math.max(0, Math.min(position, sliderWidth));
+            
+            // Convert position to percentage
+            const percentage = position / sliderWidth;
+            
+            // Calculate year value based on percentage
+            const minYear = parseInt(rangeSlider.getAttribute('data-min')) || 1900;
+            const maxYear = parseInt(rangeSlider.getAttribute('data-max')) || 2025;
+            const range = maxYear - minYear;
+            const year = Math.round(minYear + percentage * range);
+            
+            // Update the appropriate range value based on handle type
+            if (type === 'min') {
+                // Ensure min doesn't exceed max
+                activeFilters.yearRange.min = Math.min(year, activeFilters.yearRange.max);
+            } else {
+                // Ensure max doesn't go below min
+                activeFilters.yearRange.max = Math.max(year, activeFilters.yearRange.min);
+            }
+            
+            // Update the slider visually
+            updateSliderPositions();
+        }
+        
+        function stopDrag() {
+            isDragging = false;
+            document.removeEventListener('mousemove', drag);
+            document.removeEventListener('touchmove', drag);
+            document.removeEventListener('mouseup', stopDrag);
+            document.removeEventListener('touchend', stopDrag);
+        }
+    }
+    
+    // Toggle region filter
+    function toggleRegionFilter(event) {
         const option = event.target;
-        const value = option.dataset.value;
-        const type = option.dataset.type;
+        const region = option.dataset.value;
         
         option.classList.toggle('active');
         
-        // Update active filters
-        if (type === 'region') {
-            if (option.classList.contains('active')) {
-                if (!activeFilters.regions.includes(value)) {
-                    activeFilters.regions.push(value);
-                }
-            } else {
-                activeFilters.regions = activeFilters.regions.filter(region => region !== value);
+        if (option.classList.contains('active')) {
+            if (!activeFilters.regions.includes(region)) {
+                activeFilters.regions.push(region);
             }
-        } else if (type === 'collection') {
-            if (option.classList.contains('active')) {
-                if (!activeFilters.collections.includes(value)) {
-                    activeFilters.collections.push(value);
-                }
-            } else {
-                activeFilters.collections = activeFilters.collections.filter(collection => collection !== value);
-            }
+        } else {
+            activeFilters.regions = activeFilters.regions.filter(r => r !== region);
         }
     }
     
@@ -170,17 +324,22 @@
             );
         }
         
-        // Apply collection filter if any collections are selected
-        if (activeFilters.collections.length > 0) {
-            filteredTracks = filteredTracks.filter(track => 
-                track.collection_name && activeFilters.collections.includes(track.collection_name)
-            );
-        }
+        // Apply year range filter
+        filteredTracks = filteredTracks.filter(track => {
+            const year = parseInt(track.year);
+            if (isNaN(year)) return true; // Keep tracks with unknown year
+            return year >= activeFilters.yearRange.min && year <= activeFilters.yearRange.max;
+        });
         
         if (filteredTracks.length === 0) {
-            alert('No tracks match the selected filters. Please select different filters.');
+            showErrorMessage('No tracks match the selected filters. Please select different filters.');
             return;
         }
+        
+        // Update the filtered state
+        isFilterActive = (activeFilters.regions.length > 0 || 
+                       activeFilters.yearRange.min > 1900 || 
+                       activeFilters.yearRange.max < 2025);
         
         // Update the global tracks array
         tracks = filteredTracks;
@@ -192,6 +351,12 @@
         filterPanel.classList.remove('active');
         filterBtn.classList.remove('active');
         
+        // Update the filter button state
+        updateFilterButtonState();
+        
+        // Update clear button state
+        updateClearButtonState();
+        
         // Show feedback to the user about how many tracks are in the filtered list
         showFilterFeedback(filteredTracks.length);
     }
@@ -200,14 +365,23 @@
     function resetFilters() {
         // Clear active filters
         activeFilters.regions = [];
-        activeFilters.collections = [];
+        activeFilters.yearRange = { min: 1900, max: 2025 };
         
         // Reset UI
         const filterOptions = document.querySelectorAll('.filter-option');
         filterOptions.forEach(option => option.classList.remove('active'));
         
+        // Update the slider UI
+        updateSliderPositions();
+        
         // If we're already in a filtered state, reset to the full playlist
-        if (tracks.length !== trackLoader.getAllTracks().length) {
+        if (isFilterActive) {
+            // Update the filtered state
+            isFilterActive = false;
+            
+            // Reset filter button state
+            filterBtn.classList.remove('has-filters');
+            
             // Use the filtered shuffle method to get an optimal playlist
             tracks = trackLoader.getFilteredShuffledPlaylist();
             
@@ -220,6 +394,11 @@
             
             // Show feedback
             showFilterFeedback(tracks.length, true);
+        }
+        
+        // Update clear button state if it exists
+        if (typeof updateClearButtonState === 'function') {
+            updateClearButtonState();
         }
     }
     
@@ -249,6 +428,15 @@
         }
     }
     
+    // Update filter button state
+    function updateFilterButtonState() {
+        if (isFilterActive) {
+            filterBtn.classList.add('has-filters');
+        } else {
+            filterBtn.classList.remove('has-filters');
+        }
+    }
+    
     // Helper function to get current filters as text for description
     function getActiveFiltersDescription() {
         const parts = [];
@@ -257,8 +445,8 @@
             parts.push(`Regions: ${activeFilters.regions.join(', ')}`);
         }
         
-        if (activeFilters.collections.length > 0) {
-            parts.push(`Collections: ${activeFilters.collections.join(', ')}`);
+        if (activeFilters.yearRange.min > 1900 || activeFilters.yearRange.max < 2025) {
+            parts.push(`Years: ${activeFilters.yearRange.min} - ${activeFilters.yearRange.max}`);
         }
         
         return parts.length > 0 ? 
