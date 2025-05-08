@@ -329,50 +329,64 @@ button:disabled {
     color: #000;
 }
 
-/* Year range slider */
+/* Year range slider - Improved */
 .year-slider-container {
-    margin: 20px 10px;
     position: relative;
+    padding: 15px 10px 0;
+    margin-top: 15px;
 }
 
 .year-range-slider {
-    height: 5px;
-    background: var(--progress-bg);
-    border-radius: 5px;
     position: relative;
-}
-
-.year-slider-handle {
-    width: 16px;
-    height: 16px;
-    border-radius: 50%;
-    background-color: var(--accent-color);
-    position: absolute;
-    top: -6px;
-    margin-left: -8px;
-    cursor: pointer;
-    z-index: 3;
+    height: 6px;
+    background-color: rgba(255, 255, 255, 0.2);
+    border-radius: 3px;
+    margin: 15px 0;
 }
 
 .year-slider-connect {
     position: absolute;
+    top: 0;
     height: 100%;
     background-color: var(--accent-color);
-    border-radius: 5px;
+    border-radius: 3px;
     z-index: 1;
+}
+
+.year-slider-handle {
+    position: absolute;
+    top: 50%;
+    width: 16px;
+    height: 16px;
+    background-color: var(--accent-color);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    cursor: pointer;
+    z-index: 2;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+    transition: transform 0.1s ease;
+}
+
+.year-slider-handle:hover {
+    transform: translate(-50%, -50%) scale(1.1);
+}
+
+.year-slider-handle:active {
+    transform: translate(-50%, -50%) scale(1.2);
 }
 
 .year-slider-tooltips {
     display: flex;
     justify-content: space-between;
     margin-top: 10px;
-    color: #ccc;
-    font-size: 0.9rem;
 }
 
 .year-slider-tooltip {
-    text-align: center;
-    min-width: 40px;
+    background-color: rgba(255, 255, 255, 0.1);
+    color: var(--accent-color);
+    padding: 3px 8px;
+    border-radius: 10px;
+    font-size: 0.8rem;
 }
 
 /* Clear dropdown */
@@ -543,6 +557,30 @@ body.debug-mode .debug-panel {
     font-size: 0.8rem;
     color: #888;
     margin-top: 5px;
+}
+
+/* Filter animation */
+.filter-panel {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease-out;
+    margin-bottom: 0;
+}
+
+.filter-panel.active {
+    max-height: 500px;
+    margin-bottom: 30px;
+}
+
+/* Filter indicator pulse animation */
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+    100% { transform: scale(1); }
+}
+
+.filter-indicator {
+    animation: pulse 1.5s infinite;
 }
 
 /* Media queries for responsiveness */
