@@ -21,6 +21,11 @@ const currentTrackDesc = document.getElementById('current-track-description');
 const searchInput = document.getElementById('search-input');
 const searchBtn = document.getElementById('search-btn');
 const clearSearchBtn = document.getElementById('clear-search-btn');
+const filterPanel = document.getElementById('filter-panel');
+const regionFiltersContainer = document.getElementById('region-filters');
+const yearRangeContainer = document.getElementById('year-range-container');
+const applyFiltersBtn = document.getElementById('apply-filters-btn');
+const resetFiltersBtn = document.getElementById('reset-filters-btn');
 
 // Playlist and current track
 let tracks = [];
@@ -31,11 +36,18 @@ let isPlaying = false;
 let isLoading = true;
 let searchResults = null;
 let isSearchActive = false;
+let isFilterActive = false;
 let isDraggingProgress = false;
 let consecutiveErrors = 0; // Count consecutive errors to prevent infinite loops
 const MAX_CONSECUTIVE_ERRORS = 5; // Maximum number of consecutive errors to try before stopping
 let isHandlingSharedTrack = false; // Flag for track sharing functionality
 const FIXED_VOLUME = 0.7; // Fixed volume at 70%
+
+// Filter state
+const activeFilters = {
+    regions: [],
+    yearRange: { min: 1900, max: 2025 } // Default range
+};
 
 // Create search results container
 function createSearchResultsContainer() {
@@ -43,6 +55,69 @@ function createSearchResultsContainer() {
     container.className = 'search-results';
     document.querySelector('.container').appendChild(container);
     return container;
+}
+
+// Create clear button dropdown menu
+function createClearDropdown() {
+    // Check if dropdown already exists
+    const existingDropdown = document.querySelector('.clear-dropdown');
+    if (existingDropdown) {
+        existingDropdown.remove();
+    }
+    
+    const dropdown = document.createElement('div');
+    dropdown.className = 'clear-dropdown';
+    
+    const searchOption = document.createElement('div');
+    searchOption.className = 'clear-option';
+    searchOption.textContent = 'Clear Search';
+    searchOption.addEventListener('click', () => {
+        clearSearch();
+        dropdown.remove();
+    });
+    
+    const filterOption = document.createElement('div');
+    filterOption.className = 'clear-option';
+    filterOption.textContent = 'Clear Filters';
+    filterOption.addEventListener('click', () => {
+        resetFilters();
+        dropdown.remove();
+    });
+    
+    const allOption = document.createElement('div');
+    allOption.className = 'clear-option';
+    allOption.textContent = 'Clear All';
+    allOption.addEventListener('click', () => {
+        clearSearch();
+        resetFilters();
+        dropdown.remove();
+    });
+    
+    dropdown.appendChild(searchOption);
+    dropdown.appendChild(filterOption);
+    dropdown.appendChild(allOption);
+    
+    // Position dropdown below clear button
+    const clearBtnRect = clearSearchBtn.getBoundingClientRect();
+    dropdown.style.position = 'absolute';
+    dropdown.style.top = `${clearBtnRect.bottom + window.scrollY}px`;
+    dropdown.style.left = `${clearBtnRect.left + window.scrollX}px`;
+    
+    document.body.appendChild(dropdown);
+    
+    // Close dropdown when clicking elsewhere
+    function closeDropdown(e) {
+        if (!dropdown.contains(e.target) && e.target !== clearSearchBtn) {
+            dropdown.remove();
+            document.removeEventListener('click', closeDropdown);
+        }
+    }
+    
+    setTimeout(() => {
+        document.addEventListener('click', closeDropdown);
+    }, 100);
+    
+    return dropdown;
 }
 
 // Format time in seconds to MM:SS format
@@ -169,6 +244,29 @@ function showErrorMessage(message, duration = 5000) {
     setTimeout(() => {
         if (errorElement.parentNode) {
             errorElement.remove();
+        }
+    }, duration);
+}
+
+// Display success message
+function showSuccessMessage(message, duration = 3000) {
+    // Remove any existing messages
+    const existingMessages = document.querySelectorAll('.success-message');
+    existingMessages.forEach(el => el.remove());
+    
+    // Create success message element
+    const messageElement = document.createElement('div');
+    messageElement.className = 'success-message';
+    messageElement.textContent = message;
+    
+    // Add to player container
+    const playerContainer = document.querySelector('.player-container');
+    playerContainer.appendChild(messageElement);
+    
+    // Auto-remove after duration
+    setTimeout(() => {
+        if (messageElement.parentNode) {
+            messageElement.remove();
         }
     }, duration);
 }
@@ -489,6 +587,9 @@ function searchTracks() {
     
     // Display search results
     displaySearchResults(results);
+    
+    // Update clear button state
+    updateClearButtonState();
 }
 
 // Display search results
@@ -547,16 +648,305 @@ function clearSearch() {
     
     // Only reshuffle if we're returning from a search
     if (isSearchActive) {
-        // Restore original playlist with filtered tracks
-        tracks = trackLoader.getFilteredShuffledPlaylist();
         isSearchActive = false;
         
-        // Load the first track of the new filtered playlist
-        loadTrack(0);
+        // Apply any active filters if needed
+        if (isFilterActive) {
+            applyFilters();
+        } else {
+            // Restore original playlist with filtered tracks
+            tracks = trackLoader.getFilteredShuffledPlaylist();
+            
+            // Load the first track of the new filtered playlist
+            loadTrack(0);
+        }
     }
     
     // Update navigation buttons
     updateNavigationButtons();
+    
+    // Update clear button state
+    updateClearButtonState();
+}
+
+// Toggle filter panel
+function toggleFilterPanel() {
+    filterPanel.classList.toggle('active');
+    filterBtn.classList.toggle('active');
+    
+    // Re-populate filter options when opening panel
+    if (filterPanel.classList.contains('active')) {
+        populateFilterOptions();
+    }
+}
+
+// Populate filter options with available regions and year range
+function populateFilterOptions() {
+    // Only proceed if tracks are available
+    if (!trackLoader || !trackLoader.isInitialized || !trackLoader.tracks) {
+        console.error('Track loader not initialized or tracks not available');
+        return;
+    }
+    
+    // Get all available tracks
+    const allTracks = trackLoader.getAllTracks();
+    
+    // Extract unique regions
+    const regions = [...new Set(allTracks
+        .map(track => track.region)
+        .filter(region => region && region.trim() !== '')
+    )].sort();
+    
+    // Extract year range
+    const years = allTracks
+        .map(track => parseInt(track.year))
+        .filter(year => !isNaN(year));
+    
+    const minYear = Math.min(...years) || 1900;
+    const maxYear = Math.max(...years) || 2025;
+    
+    // Populate region filters
+    populateRegionFilters(regions);
+    
+    // Populate year range slider
+    populateYearRangeSlider(minYear, maxYear);
+}
+
+// Populate region filters
+function populateRegionFilters(regions) {
+    // Clear previous options
+    regionFiltersContainer.innerHTML = '';
+    
+    // Add filter options
+    regions.forEach(region => {
+        const optionElement = document.createElement('div');
+        optionElement.className = 'filter-option';
+        if (activeFilters.regions.includes(region)) {
+            optionElement.classList.add('active');
+        }
+        optionElement.dataset.value = region;
+        optionElement.textContent = region;
+        
+        // Add click event listener
+        optionElement.addEventListener('click', toggleRegionFilter);
+        
+        regionFiltersContainer.appendChild(optionElement);
+    });
+}
+
+// Create year range slider
+function populateYearRangeSlider(minYear, maxYear) {
+    // Clear previous content
+    yearRangeContainer.innerHTML = '';
+    
+    // Create year range slider elements
+    const yearSliderLabel = document.createElement('h3');
+    yearSliderLabel.textContent = 'Filter by Year Range';
+    
+    const sliderContainer = document.createElement('div');
+    sliderContainer.className = 'year-slider-container';
+    
+    const minYearDisplay = document.createElement('span');
+    minYearDisplay.className = 'year-display min-year';
+    minYearDisplay.textContent = activeFilters.yearRange.min;
+    
+    const maxYearDisplay = document.createElement('span');
+    maxYearDisplay.className = 'year-display max-year';
+    maxYearDisplay.textContent = activeFilters.yearRange.max;
+    
+    const rangeSlider = document.createElement('div');
+    rangeSlider.className = 'year-range-slider';
+    
+    // Create min slider
+    const minSlider = document.createElement('input');
+    minSlider.type = 'range';
+    minSlider.min = minYear;
+    minSlider.max = maxYear;
+    minSlider.value = activeFilters.yearRange.min;
+    minSlider.className = 'year-slider min-slider';
+    
+    // Create max slider
+    const maxSlider = document.createElement('input');
+    maxSlider.type = 'range';
+    maxSlider.min = minYear;
+    maxSlider.max = maxYear;
+    maxSlider.value = activeFilters.yearRange.max;
+    maxSlider.className = 'year-slider max-slider';
+    
+    // Add event listeners
+    minSlider.addEventListener('input', () => {
+        // Ensure min value doesn't exceed max value
+        if (parseInt(minSlider.value) > parseInt(maxSlider.value)) {
+            minSlider.value = maxSlider.value;
+        }
+        
+        activeFilters.yearRange.min = parseInt(minSlider.value);
+        minYearDisplay.textContent = minSlider.value;
+    });
+    
+    maxSlider.addEventListener('input', () => {
+        // Ensure max value doesn't go below min value
+        if (parseInt(maxSlider.value) < parseInt(minSlider.value)) {
+            maxSlider.value = minSlider.value;
+        }
+        
+        activeFilters.yearRange.max = parseInt(maxSlider.value);
+        maxYearDisplay.textContent = maxSlider.value;
+    });
+    
+    // Append elements
+    rangeSlider.appendChild(minSlider);
+    rangeSlider.appendChild(maxSlider);
+    
+    sliderContainer.appendChild(minYearDisplay);
+    sliderContainer.appendChild(rangeSlider);
+    sliderContainer.appendChild(maxYearDisplay);
+    
+    yearRangeContainer.appendChild(yearSliderLabel);
+    yearRangeContainer.appendChild(sliderContainer);
+}
+
+// Toggle region filter
+function toggleRegionFilter(event) {
+    const option = event.target;
+    const region = option.dataset.value;
+    
+    option.classList.toggle('active');
+    
+    if (option.classList.contains('active')) {
+        if (!activeFilters.regions.includes(region)) {
+            activeFilters.regions.push(region);
+        }
+    } else {
+        activeFilters.regions = activeFilters.regions.filter(r => r !== region);
+    }
+}
+
+// Apply selected filters
+function applyFilters() {
+    // Only proceed if tracks are available
+    if (!trackLoader || !trackLoader.isInitialized || !trackLoader.tracks) {
+        console.error('Track loader not initialized or tracks not available');
+        return;
+    }
+    
+    // Get all available tracks
+    const allTracks = trackLoader.getAllTracks();
+    
+    // Filter tracks based on selected options
+    let filteredTracks = allTracks;
+    
+    // Apply region filter if any regions are selected
+    if (activeFilters.regions.length > 0) {
+        filteredTracks = filteredTracks.filter(track => 
+            track.region && activeFilters.regions.includes(track.region)
+        );
+    }
+    
+    // Apply year range filter
+    filteredTracks = filteredTracks.filter(track => {
+        const year = parseInt(track.year);
+        if (isNaN(year)) return true; // Keep tracks with unknown year
+        return year >= activeFilters.yearRange.min && year <= activeFilters.yearRange.max;
+    });
+    
+    if (filteredTracks.length === 0) {
+        showErrorMessage('No tracks match the selected filters. Please select different filters.');
+        return;
+    }
+    
+    // Update the filtered state
+    isFilterActive = (activeFilters.regions.length > 0 || 
+                    activeFilters.yearRange.min > 1900 || 
+                    activeFilters.yearRange.max < 2025);
+    
+    // Update the global tracks array
+    tracks = filteredTracks;
+    
+    // Load the first track of the filtered list
+    loadTrack(0);
+    
+    // Close filter panel
+    filterPanel.classList.remove('active');
+    filterBtn.classList.remove('active');
+    
+    // Update the filter button state
+    updateFilterButtonState();
+    
+    // Update clear button state
+    updateClearButtonState();
+    
+    // Show feedback to the user about how many tracks are in the filtered list
+    showSuccessMessage(`Found ${filteredTracks.length} tracks matching your filters.`);
+}
+
+// Reset all filters
+function resetFilters() {
+    // Clear active filters
+    activeFilters.regions = [];
+    activeFilters.yearRange = { min: 1900, max: 2025 };
+    
+    // Reset UI
+    const filterOptions = document.querySelectorAll('.filter-option');
+    filterOptions.forEach(option => option.classList.remove('active'));
+    
+    // Update the filtered state
+    isFilterActive = false;
+    
+    // Reset filter button state
+    filterBtn.classList.remove('has-filters');
+    
+    // If we're already in a filtered state, reset to the full playlist
+    if (isFilterActive) {
+        // Use the filtered shuffle method to get an optimal playlist
+        tracks = trackLoader.getFilteredShuffledPlaylist();
+        
+        // Load the first track
+        loadTrack(0);
+        
+        // Close filter panel
+        filterPanel.classList.remove('active');
+        filterBtn.classList.remove('active');
+        
+        // Show feedback
+        showSuccessMessage(`Filters reset. Showing all ${tracks.length} tracks.`);
+    }
+    
+    // Update clear button state
+    updateClearButtonState();
+}
+
+// Update filter button state
+function updateFilterButtonState() {
+    if (isFilterActive) {
+        filterBtn.classList.add('has-filters');
+    } else {
+        filterBtn.classList.remove('has-filters');
+    }
+}
+
+// Update clear button state
+function updateClearButtonState() {
+    if (isSearchActive && isFilterActive) {
+        clearSearchBtn.textContent = 'Clear...';
+    } else if (isSearchActive) {
+        clearSearchBtn.textContent = 'Clear Search';
+    } else if (isFilterActive) {
+        clearSearchBtn.textContent = 'Clear Filters';
+    } else {
+        clearSearchBtn.textContent = 'Clear';
+    }
+}
+
+// Handle clear button click
+function handleClearButtonClick() {
+    if (isSearchActive && isFilterActive) {
+        createClearDropdown();
+    } else if (isSearchActive) {
+        clearSearch();
+    } else if (isFilterActive) {
+        resetFilters();
+    }
 }
 
 // Get a track by ID from the current playlist
@@ -682,6 +1072,9 @@ playPauseBtn.addEventListener('click', togglePlay);
 prevBtn.addEventListener('click', playPreviousTrack);
 skipBtn.addEventListener('click', skipToNextTrack);
 muteBtn.addEventListener('click', toggleMute);
+filterBtn.addEventListener('click', toggleFilterPanel);
+applyFiltersBtn.addEventListener('click', applyFilters);
+resetFiltersBtn.addEventListener('click', resetFilters);
 
 // FIXED PROGRESS BAR FUNCTIONALITY
 // Single click on progress bar - jump to that position immediately
@@ -715,6 +1108,10 @@ searchInput.addEventListener('keyup', (e) => {
     }
 });
 
+// Set up clear button to handle both search and filter clearing
+clearSearchBtn.addEventListener('click', handleClearButtonClick);
+searchBtn.addEventListener('click', searchTracks);
+
 // Initialize the application
 document.addEventListener('DOMContentLoaded', () => {
     // Set fixed volume
@@ -725,6 +1122,11 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Set up click handler for iOS audio playback
     setupIOSAudioHandling();
+    
+    // Initial filter population
+    setTimeout(() => {
+        populateFilterOptions();
+    }, 2000);
 });
 
 // Special handling for iOS audio playback
@@ -778,7 +1180,3 @@ function setupIOSAudioHandling() {
         }, { once: true });
     }
 }
-
-// Add event listeners for search buttons
-searchBtn.addEventListener('click', searchTracks);
-clearSearchBtn.addEventListener('click', clearSearch);
