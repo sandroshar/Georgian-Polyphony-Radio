@@ -664,7 +664,7 @@
 | col_17_track_13 | Anania Erkomaishvili | Maglidan Gadmomdgariko (Piruzi) | Anania-Maglidan Gadmomdgariko (Piruzi).mp3 | Anania Erkomaishvili/Anania-Maglidan Gadmomdgariko (Piruzi).mp3 | Anania Erkomaishvili | 1977 | Guria |
 | col_17_track_8 | Anania Erkomaishvili | Me Patara Kartveli Var | Anania-Me Patara Kartveli Var.mp3 | Anania Erkomaishvili/Anania-Me Patara Kartveli Var.mp3 | Anania Erkomaishvili | 1977 | Guria |
 | col_17_track_15 | Anania Erkomaishvili | Mtsvanesa Da Ukudosa | Erkomaishvilebi-Mtsvanesa Da Ukudosa.mp3 | Anania Erkomaishvili/Erkomaishvilebi-Mtsvanesa Da Ukudosa.mp3 | Erkomaishvilebi | unknown | Guria |
-| col_17_track_17 | Anania Erkomaishvili | Natliachemi Mestumra | Anania-Natliachemi Mestumra.mp3 | Anania Erkomaishvili/Anania-Natliachemi Mestumra.mp3 | Artem Erkomaishvili | unknown | Guria |
+| col_17_track_17 | Anania Erkomaishvili | Natliachemi Mestumra | Anania-Natliachemi Mestumra.mp3 | Anania Erkomaishvili/Anania-Natliachemi Mestumra.mp3 | Anania Erkomaishvili | unknown | Guria |
 | col_17_track_1 | Anania Erkomaishvili | Otiauri | Anania-Otiauri.mp3 | Anania Erkomaishvili/Anania-Otiauri.mp3 | Anania Erkomaishvili | 1977 | Guria |
 | col_17_track_2 | Anania Erkomaishvili | Pikris Simgera | Anania-Pikris Simgera.mp3 | Anania Erkomaishvili/Anania-Pikris Simgera.mp3 | Anania Erkomaishvili | 1977 | Guria |
 | col_17_track_11 | Anania Erkomaishvili | Ra Kargia Satsutro | Anania-Ra Kargia Satsutro.mp3 | Anania Erkomaishvili/Anania-Ra Kargia Satsutro.mp3 | Anania Erkomaishvili | 1977 | Guria |
