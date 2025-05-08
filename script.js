@@ -779,4 +779,6 @@ function setupIOSAudioHandling() {
     }
 }
 
+// Add event listeners for search buttons
 searchBtn.addEventListener('click', searchTracks);
+clearSearchBtn.addEventListener('click', clearSearch);
