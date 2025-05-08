@@ -51,10 +51,11 @@ h1 {
     font-size: 1rem;
 }
 
-.search-container {
+.search-filter-container {
     margin-bottom: 20px;
     display: flex;
     gap: 10px;
+    align-items: center;
 }
 
 #search-input {
@@ -214,7 +215,7 @@ button:disabled {
     cursor: not-allowed;
 }
 
-.play-btn, .mute-btn, .nav-btn, .share-btn, .filter-btn {
+.play-btn, .mute-btn, .nav-btn, .share-btn {
     width: 50px;
     height: 50px;
     border-radius: 50%;
@@ -227,14 +228,41 @@ button:disabled {
 .play-btn:hover:not(:disabled), 
 .mute-btn:hover:not(:disabled), 
 .nav-btn:hover:not(:disabled),
-.share-btn:hover:not(:disabled),
-.filter-btn:hover:not(:disabled) {
+.share-btn:hover:not(:disabled) {
     background-color: var(--button-hover);
 }
 
-.share-btn, .filter-btn {
+.filter-btn {
     width: 40px;
     height: 40px;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.filter-btn:hover:not(:disabled),
+.filter-btn.active {
+    background-color: var(--accent-color);
+    color: #000;
+}
+
+/* Filter indicator */
+.filter-indicator {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background-color: var(--accent-color);
+    display: none;
+}
+
+.filter-btn.has-filters .filter-indicator {
+    display: block;
 }
 
 .share-btn:active, .filter-btn:active {
@@ -301,10 +329,91 @@ button:disabled {
     color: #000;
 }
 
-/* Filter button animation */
-.filter-btn.active {
-    background-color: var(--accent-color);
-    color: #000;
+/* Year range slider */
+.year-slider-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+    margin-top: 10px;
+    margin-bottom: 20px;
+}
+
+.year-range-slider {
+    flex: 1;
+    position: relative;
+    height: 40px;
+}
+
+.year-slider {
+    position: absolute;
+    width: 100%;
+    height: 5px;
+    -webkit-appearance: none;
+    appearance: none;
+    background: var(--progress-bg);
+    border-radius: 5px;
+    outline: none;
+    margin: 0;
+    cursor: pointer;
+}
+
+.min-slider {
+    top: 10px;
+}
+
+.max-slider {
+    top: 25px;
+}
+
+.year-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    background: var(--accent-color);
+    cursor: pointer;
+}
+
+.year-slider::-moz-range-thumb {
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    background: var(--accent-color);
+    cursor: pointer;
+    border: none;
+}
+
+.year-display {
+    font-size: 0.9rem;
+    color: #ccc;
+    width: 40px;
+    text-align: center;
+}
+
+/* Clear dropdown */
+.clear-dropdown {
+    position: absolute;
+    background-color: var(--filter-panel-bg);
+    border-radius: 5px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    overflow: hidden;
+    z-index: 100;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    min-width: 150px;
+}
+
+.clear-option {
+    padding: 10px 15px;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: left;
+}
+
+.clear-option:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: var(--accent-color);
 }
 
 footer {
@@ -355,7 +464,7 @@ footer {
 }
 
 /* Error and success messages */
-.error-message, .audio-error {
+.audio-error, .error-message {
     background-color: rgba(255, 77, 77, 0.2);
     color: var(--error-color);
     padding: 10px;
@@ -364,7 +473,7 @@ footer {
     font-size: 0.9rem;
 }
 
-.share-success {
+.success-message, .share-success {
     background-color: rgba(46, 204, 113, 0.2);
     color: var(--success-color);
     padding: 10px;
@@ -463,12 +572,20 @@ body.debug-mode .debug-panel {
         font-size: 2rem;
     }
     
-    .search-container {
-        flex-direction: column;
+    .search-filter-container {
+        flex-wrap: wrap;
+    }
+    
+    #search-input {
+        flex-basis: calc(100% - 110px);
+    }
+    
+    .filter-btn {
+        order: -1;
     }
     
     .search-btn, .clear-btn {
-        width: 100%;
+        flex-basis: calc(50% - 15px);
     }
     
     .controls {
@@ -481,22 +598,23 @@ body.debug-mode .debug-panel {
         margin-bottom: 15px;
     }
     
-    .share-btn, .filter-btn {
-        width: 35px;
-        height: 35px;
+    .year-slider-container {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 5px;
     }
     
-    .share-btn svg, .filter-btn svg {
-        width: 18px;
-        height: 18px;
+    .year-display {
+        text-align: center;
+        width: 100%;
     }
     
     .filter-options {
-        gap: 8px;
+        gap: 5px;
     }
     
     .filter-option {
-        padding: 6px 12px;
+        padding: 6px 10px;
         font-size: 0.8rem;
     }
 }
