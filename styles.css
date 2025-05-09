@@ -329,7 +329,8 @@ button:disabled {
     color: #000;
 }
 
-/* Year range slider - Improved */
+/* Year range slider - COMMENTED OUT to avoid conflicts with new slider */
+/*
 .year-slider-container {
     display: flex;
     align-items: center;
@@ -389,6 +390,7 @@ button:disabled {
 .min-slider::-moz-range-thumb:hover, .max-slider::-moz-range-thumb:hover {
     transform: scale(1.1);
 }
+*/
 
 /* Clear dropdown */
 .clear-dropdown {
