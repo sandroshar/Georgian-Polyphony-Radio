@@ -682,6 +682,13 @@ function toggleFilterPanel() {
 
 // Populate filter options with available regions and year range
 function populateFilterOptions() {
+    // Check if the custom slider implementation exists
+    if (typeof window.trackFilters !== 'undefined' && 
+        document.querySelector('[data-range-slider-styles="true"]')) {
+        console.log("Using custom slider implementation from filter-tracks.js");
+        return; // Let filter-tracks.js handle the slider
+    }
+    
     // Only proceed if tracks are available
     if (!trackLoader || !trackLoader.isInitialized || !trackLoader.tracks) {
         console.error('Track loader not initialized or tracks not available');
