@@ -121,7 +121,7 @@
         });
     }
     
-    // Function to populate year range slider - UNIFIED RANGE SLIDER
+    // Function to populate year range slider - SIMPLIFIED SINGLE SLIDER SOLUTION
     function populateYearRangeSlider(minYear, maxYear) {
         // Clear previous content
         yearRangeContainer.innerHTML = '';
@@ -137,99 +137,102 @@
         minYearDisplay.className = 'year-display min-year';
         minYearDisplay.textContent = activeFilters.yearRange.min;
         
-        const rangeSliderContainer = document.createElement('div');
-        rangeSliderContainer.className = 'range-slider-container';
-        
         const maxYearDisplay = document.createElement('span');
         maxYearDisplay.className = 'year-display max-year';
         maxYearDisplay.textContent = activeFilters.yearRange.max;
         
-        // Create the slider element
+        // Create a single range slider with a special track
         const rangeSlider = document.createElement('div');
-        rangeSlider.className = 'range-slider';
-        rangeSlider.id = 'year-range-slider';
+        rangeSlider.className = 'single-range-slider';
         
-        // Append elements to container
-        rangeSliderContainer.appendChild(rangeSlider);
+        // Create progress/track bar inside the slider
+        const rangeTrack = document.createElement('div');
+        rangeTrack.className = 'range-track';
         
+        // Create the filled part of the slider
+        const rangeFill = document.createElement('div');
+        rangeFill.className = 'range-fill';
+        
+        // Create two thumbs for min and max values
+        const minThumb = document.createElement('input');
+        minThumb.type = 'range';
+        minThumb.className = 'thumb thumb-min';
+        minThumb.min = minYear;
+        minThumb.max = maxYear;
+        minThumb.value = activeFilters.yearRange.min;
+        minThumb.setAttribute('aria-label', 'Minimum year');
+        
+        const maxThumb = document.createElement('input');
+        maxThumb.type = 'range';
+        maxThumb.className = 'thumb thumb-max';
+        maxThumb.min = minYear;
+        maxThumb.max = maxYear;
+        maxThumb.value = activeFilters.yearRange.max;
+        maxThumb.setAttribute('aria-label', 'Maximum year');
+        
+        // Add event listeners for thumbs
+        minThumb.addEventListener('input', function() {
+            // Make sure min doesn't exceed max
+            if (parseInt(this.value) > parseInt(maxThumb.value)) {
+                this.value = maxThumb.value;
+            }
+            
+            // Update min year display and active filter
+            minYearDisplay.textContent = this.value;
+            activeFilters.yearRange.min = parseInt(this.value);
+            
+            // Update the fill element's position
+            updateRangeFill(minThumb, maxThumb, rangeFill, minYear, maxYear);
+        });
+        
+        maxThumb.addEventListener('input', function() {
+            // Make sure max doesn't go below min
+            if (parseInt(this.value) < parseInt(minThumb.value)) {
+                this.value = minThumb.value;
+            }
+            
+            // Update max year display and active filter
+            maxYearDisplay.textContent = this.value;
+            activeFilters.yearRange.max = parseInt(this.value);
+            
+            // Update the fill element's position
+            updateRangeFill(minThumb, maxThumb, rangeFill, minYear, maxYear);
+        });
+        
+        // Assemble the slider components
+        rangeSlider.appendChild(rangeTrack);
+        rangeSlider.appendChild(rangeFill);
+        rangeSlider.appendChild(minThumb);
+        rangeSlider.appendChild(maxThumb);
+        
+        // Assemble the container
         sliderContainer.appendChild(minYearDisplay);
-        sliderContainer.appendChild(rangeSliderContainer);
+        sliderContainer.appendChild(rangeSlider);
         sliderContainer.appendChild(maxYearDisplay);
         
         yearRangeContainer.appendChild(yearSliderLabel);
         yearRangeContainer.appendChild(sliderContainer);
         
-        // Add custom CSS and script to create noUiSlider
+        // Add custom CSS for the slider
         addSliderStyles();
         
-        // Initialize the slider after a short delay to ensure DOM is ready
+        // Initialize the fill position
         setTimeout(() => {
-            initializeRangeSlider(minYear, maxYear, rangeSlider, minYearDisplay, maxYearDisplay);
-        }, 100);
+            updateRangeFill(minThumb, maxThumb, rangeFill, minYear, maxYear);
+        }, 10);
     }
     
-    // Function to initialize noUiSlider for the year range
-    function initializeRangeSlider(minYear, maxYear, sliderElement, minDisplay, maxDisplay) {
-        // Check if noUiSlider is available
-        if (typeof noUiSlider === 'undefined') {
-            // If not available, dynamically load it
-            loadNoUiSlider(() => {
-                createRangeSlider(minYear, maxYear, sliderElement, minDisplay, maxDisplay);
-            });
-        } else {
-            // If already available, create the slider
-            createRangeSlider(minYear, maxYear, sliderElement, minDisplay, maxDisplay);
-        }
-    }
-    
-    // Function to dynamically load noUiSlider
-    function loadNoUiSlider(callback) {
-        // Create script element for noUiSlider
-        const script = document.createElement('script');
-        script.src = 'https://cdn.jsdelivr.net/npm/nouislider@14.6.3/distribute/nouislider.min.js';
-        script.onload = () => {
-            // Create stylesheet for noUiSlider
-            const link = document.createElement('link');
-            link.rel = 'stylesheet';
-            link.href = 'https://cdn.jsdelivr.net/npm/nouislider@14.6.3/distribute/nouislider.min.css';
-            link.onload = callback;
-            document.head.appendChild(link);
-        };
-        document.head.appendChild(script);
-    }
-    
-    // Function to create the range slider with noUiSlider
-    function createRangeSlider(minYear, maxYear, sliderElement, minDisplay, maxDisplay) {
-        // If the slider already has noUiSlider initialized, destroy it first
-        if (sliderElement.noUiSlider) {
-            sliderElement.noUiSlider.destroy();
-        }
+    // Update the range fill element's size and position
+    function updateRangeFill(minThumb, maxThumb, rangeFill, minYear, maxYear) {
+        const range = maxYear - minYear;
+        const minVal = parseInt(minThumb.value) - minYear;
+        const maxVal = parseInt(maxThumb.value) - minYear;
         
-        // Create the noUiSlider
-        noUiSlider.create(sliderElement, {
-            start: [activeFilters.yearRange.min, activeFilters.yearRange.max],
-            connect: true,
-            step: 1,
-            range: {
-                'min': minYear,
-                'max': maxYear
-            },
-            format: {
-                to: value => Math.round(value),
-                from: value => Math.round(value)
-            }
-        });
+        const minPercent = (minVal / range) * 100;
+        const maxPercent = (maxVal / range) * 100;
         
-        // Update the displays when the slider values change
-        sliderElement.noUiSlider.on('update', (values, handle) => {
-            if (handle === 0) {
-                minDisplay.textContent = values[0];
-                activeFilters.yearRange.min = parseInt(values[0]);
-            } else {
-                maxDisplay.textContent = values[1];
-                activeFilters.yearRange.max = parseInt(values[1]);
-            }
-        });
+        rangeFill.style.left = minPercent + '%';
+        rangeFill.style.width = (maxPercent - minPercent) + '%';
     }
     
     // Toggle region filter
@@ -466,21 +469,13 @@
         const style = document.createElement('style');
         style.setAttribute('data-slider-styles', 'true');
         style.textContent = `
-            /* Range Slider Container */
+            /* Single Range Slider Container */
             .year-slider-container {
                 display: flex;
                 align-items: center;
                 justify-content: space-between;
                 margin: 15px 0;
                 width: 100%;
-            }
-            
-            .range-slider-container {
-                flex-grow: 1;
-                margin: 0 15px;
-                height: 30px;
-                display: flex;
-                align-items: center;
             }
             
             .year-display {
@@ -494,42 +489,96 @@
                 font-weight: bold;
             }
             
-            /* Custom noUiSlider Styling */
-            .range-slider {
+            /* Single Range Slider Styling */
+            .single-range-slider {
+                position: relative;
                 height: 6px;
+                margin: 0 15px;
                 width: 100%;
-            }
-            
-            .noUi-target {
-                background-color: rgba(255, 255, 255, 0.2);
-                border: none;
                 border-radius: 3px;
-                box-shadow: none;
+                background: transparent;
+            }
+
+            /* Track styling */
+            .range-track {
+                position: absolute;
+                width: 100%;
                 height: 6px;
+                background-color: rgba(255, 255, 255, 0.2);
+                border-radius: 3px;
+                z-index: 1;
             }
-            
-            .noUi-connect {
+
+            /* Fill between the thumbs */
+            .range-fill {
+                position: absolute;
+                height: 6px;
                 background-color: var(--accent-color);
+                border-radius: 3px;
+                z-index: 2;
             }
-            
-            .noUi-handle {
-                width: 18px !important;
-                height: 18px !important;
+
+            /* Custom thumb styling */
+            .thumb {
+                position: absolute;
+                top: 0;
+                width: 100%;
+                height: 0; /* Make the actual range input invisible */
+                -webkit-appearance: none;
+                appearance: none;
+                background: transparent;
+                pointer-events: none; /* Initially disable pointer events */
+                z-index: 3;
+                margin: 0;
+            }
+
+            /* Enable pointer events on thumb area */
+            .thumb::-webkit-slider-thumb {
+                -webkit-appearance: none;
+                appearance: none;
+                pointer-events: auto; /* Re-enable pointer events just for the thumb */
+                width: 18px;
+                height: 18px;
                 border-radius: 50%;
                 background-color: var(--accent-color);
-                box-shadow: none;
                 border: 2px solid var(--bg-color);
                 cursor: pointer;
-                right: -9px !important;
-                top: -7px !important;
+                margin-top: -6px; /* Center the thumb on the track */
+                transition: transform 0.1s ease;
             }
-            
-            .noUi-handle:before, .noUi-handle:after {
-                display: none;
+
+            .thumb::-moz-range-thumb {
+                appearance: none;
+                pointer-events: auto;
+                width: 18px;
+                height: 18px;
+                border-radius: 50%;
+                background-color: var(--accent-color);
+                border: 2px solid var(--bg-color);
+                cursor: pointer;
+                transition: transform 0.1s ease;
             }
-            
-            .noUi-handle:hover {
+
+            /* Hover effect for thumbs */
+            .thumb::-webkit-slider-thumb:hover {
                 transform: scale(1.1);
+            }
+
+            .thumb::-moz-range-thumb:hover {
+                transform: scale(1.1);
+            }
+
+            /* Hide the default track */
+            .thumb::-webkit-slider-runnable-track {
+                height: 0;
+                background: transparent;
+                border: none;
+            }
+
+            .thumb::-moz-range-track {
+                height: 0;
+                background: transparent;
+                border: none;
             }
             
             /* Responsive adjustments */
@@ -539,7 +588,7 @@
                     align-items: center;
                 }
                 
-                .range-slider-container {
+                .single-range-slider {
                     margin: 0 10px;
                 }
                 
