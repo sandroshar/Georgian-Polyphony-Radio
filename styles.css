@@ -329,68 +329,54 @@ button:disabled {
     color: #000;
 }
 
-/* Year range slider - COMMENTED OUT to avoid conflicts with new slider */
-/*
-.year-slider-container {
+/* Year input fields styling */
+.year-inputs-container {
     display: flex;
-    align-items: center;
-    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 15px;
     margin: 15px 0;
     width: 100%;
 }
 
-.year-display {
-    min-width: 40px;
-    text-align: center;
+.year-input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    flex: 1;
+    min-width: 120px;
+}
+
+.year-input-label {
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.year-input {
+    padding: 8px 10px;
+    border: none;
+    border-radius: 5px;
     background-color: rgba(255, 255, 255, 0.1);
     color: var(--accent-color);
-    padding: 3px 8px;
-    border-radius: 10px;
-    font-size: 0.8rem;
-    margin: 0 10px;
+    font-size: 0.9rem;
+    font-weight: bold;
+    width: 100%;
 }
 
-.min-slider, .max-slider {
-    -webkit-appearance: none;
-    appearance: none;
-    height: 5px;
-    background: rgba(255, 255, 255, 0.2);
-    outline: none;
-    border-radius: 5px;
-    width: 40%;
-    flex-grow: 1;
-    margin: 0 5px;
+.year-input:focus {
+    background-color: rgba(255, 255, 255, 0.15);
+    outline: 1px solid var(--accent-color);
 }
 
-.min-slider::-webkit-slider-thumb, .max-slider::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    appearance: none;
-    width: 16px;
-    height: 16px;
-    border-radius: 50%;
-    background: var(--accent-color);
-    cursor: pointer;
-    transition: transform 0.1s ease;
+/* Hide spinner buttons on number inputs */
+.year-input::-webkit-inner-spin-button, 
+.year-input::-webkit-outer-spin-button { 
+    -webkit-appearance: none; 
+    margin: 0; 
 }
 
-.min-slider::-moz-range-thumb, .max-slider::-moz-range-thumb {
-    width: 16px;
-    height: 16px;
-    border-radius: 50%;
-    background: var(--accent-color);
-    cursor: pointer;
-    border: none;
-    transition: transform 0.1s ease;
+.year-input {
+    -moz-appearance: textfield; /* Firefox */
 }
-
-.min-slider::-webkit-slider-thumb:hover, .max-slider::-webkit-slider-thumb:hover {
-    transform: scale(1.1);
-}
-
-.min-slider::-moz-range-thumb:hover, .max-slider::-moz-range-thumb:hover {
-    transform: scale(1.1);
-}
-*/
 
 /* Clear dropdown */
 .clear-dropdown {
@@ -622,14 +608,12 @@ body.debug-mode .debug-panel {
         margin-bottom: 15px;
     }
     
-    .year-slider-container {
+    .year-inputs-container {
         flex-direction: column;
-        align-items: stretch;
-        gap: 5px;
+        gap: 10px;
     }
     
-    .year-display {
-        text-align: center;
+    .year-input-group {
         width: 100%;
     }
     
