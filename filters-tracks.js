@@ -121,7 +121,7 @@
         });
     }
     
-    // Function to populate year range slider - FIXED VERSION
+    // Function to populate year range slider - UNIFIED RANGE SLIDER
     function populateYearRangeSlider(minYear, maxYear) {
         // Clear previous content
         yearRangeContainer.innerHTML = '';
@@ -137,58 +137,99 @@
         minYearDisplay.className = 'year-display min-year';
         minYearDisplay.textContent = activeFilters.yearRange.min;
         
+        const rangeSliderContainer = document.createElement('div');
+        rangeSliderContainer.className = 'range-slider-container';
+        
         const maxYearDisplay = document.createElement('span');
         maxYearDisplay.className = 'year-display max-year';
         maxYearDisplay.textContent = activeFilters.yearRange.max;
         
-        // Create min slider
-        const minSlider = document.createElement('input');
-        minSlider.type = 'range';
-        minSlider.min = minYear;
-        minSlider.max = maxYear;
-        minSlider.value = activeFilters.yearRange.min;
-        minSlider.className = 'year-slider min-slider';
-        
-        // Create max slider
-        const maxSlider = document.createElement('input');
-        maxSlider.type = 'range';
-        maxSlider.min = minYear;
-        maxSlider.max = maxYear;
-        maxSlider.value = activeFilters.yearRange.max;
-        maxSlider.className = 'year-slider max-slider';
-        
-        // Add event listeners
-        minSlider.addEventListener('input', () => {
-            // Ensure min value doesn't exceed max value
-            if (parseInt(minSlider.value) > parseInt(maxSlider.value)) {
-                minSlider.value = maxSlider.value;
-            }
-            
-            activeFilters.yearRange.min = parseInt(minSlider.value);
-            minYearDisplay.textContent = minSlider.value;
-        });
-        
-        maxSlider.addEventListener('input', () => {
-            // Ensure max value doesn't go below min value
-            if (parseInt(maxSlider.value) < parseInt(minSlider.value)) {
-                maxSlider.value = minSlider.value;
-            }
-            
-            activeFilters.yearRange.max = parseInt(maxSlider.value);
-            maxYearDisplay.textContent = maxSlider.value;
-        });
+        // Create the slider element
+        const rangeSlider = document.createElement('div');
+        rangeSlider.className = 'range-slider';
+        rangeSlider.id = 'year-range-slider';
         
         // Append elements to container
+        rangeSliderContainer.appendChild(rangeSlider);
+        
         sliderContainer.appendChild(minYearDisplay);
-        sliderContainer.appendChild(minSlider);
-        sliderContainer.appendChild(maxSlider);
+        sliderContainer.appendChild(rangeSliderContainer);
         sliderContainer.appendChild(maxYearDisplay);
         
         yearRangeContainer.appendChild(yearSliderLabel);
         yearRangeContainer.appendChild(sliderContainer);
         
-        // Add custom CSS to fix the slider appearance
+        // Add custom CSS and script to create noUiSlider
         addSliderStyles();
+        
+        // Initialize the slider after a short delay to ensure DOM is ready
+        setTimeout(() => {
+            initializeRangeSlider(minYear, maxYear, rangeSlider, minYearDisplay, maxYearDisplay);
+        }, 100);
+    }
+    
+    // Function to initialize noUiSlider for the year range
+    function initializeRangeSlider(minYear, maxYear, sliderElement, minDisplay, maxDisplay) {
+        // Check if noUiSlider is available
+        if (typeof noUiSlider === 'undefined') {
+            // If not available, dynamically load it
+            loadNoUiSlider(() => {
+                createRangeSlider(minYear, maxYear, sliderElement, minDisplay, maxDisplay);
+            });
+        } else {
+            // If already available, create the slider
+            createRangeSlider(minYear, maxYear, sliderElement, minDisplay, maxDisplay);
+        }
+    }
+    
+    // Function to dynamically load noUiSlider
+    function loadNoUiSlider(callback) {
+        // Create script element for noUiSlider
+        const script = document.createElement('script');
+        script.src = 'https://cdn.jsdelivr.net/npm/nouislider@14.6.3/distribute/nouislider.min.js';
+        script.onload = () => {
+            // Create stylesheet for noUiSlider
+            const link = document.createElement('link');
+            link.rel = 'stylesheet';
+            link.href = 'https://cdn.jsdelivr.net/npm/nouislider@14.6.3/distribute/nouislider.min.css';
+            link.onload = callback;
+            document.head.appendChild(link);
+        };
+        document.head.appendChild(script);
+    }
+    
+    // Function to create the range slider with noUiSlider
+    function createRangeSlider(minYear, maxYear, sliderElement, minDisplay, maxDisplay) {
+        // If the slider already has noUiSlider initialized, destroy it first
+        if (sliderElement.noUiSlider) {
+            sliderElement.noUiSlider.destroy();
+        }
+        
+        // Create the noUiSlider
+        noUiSlider.create(sliderElement, {
+            start: [activeFilters.yearRange.min, activeFilters.yearRange.max],
+            connect: true,
+            step: 1,
+            range: {
+                'min': minYear,
+                'max': maxYear
+            },
+            format: {
+                to: value => Math.round(value),
+                from: value => Math.round(value)
+            }
+        });
+        
+        // Update the displays when the slider values change
+        sliderElement.noUiSlider.on('update', (values, handle) => {
+            if (handle === 0) {
+                minDisplay.textContent = values[0];
+                activeFilters.yearRange.min = parseInt(values[0]);
+            } else {
+                maxDisplay.textContent = values[1];
+                activeFilters.yearRange.max = parseInt(values[1]);
+            }
+        });
     }
     
     // Toggle region filter
@@ -425,7 +466,7 @@
         const style = document.createElement('style');
         style.setAttribute('data-slider-styles', 'true');
         style.textContent = `
-            /* Fixed Year Range Slider */
+            /* Range Slider Container */
             .year-slider-container {
                 display: flex;
                 align-items: center;
@@ -434,71 +475,78 @@
                 width: 100%;
             }
             
+            .range-slider-container {
+                flex-grow: 1;
+                margin: 0 15px;
+                height: 30px;
+                display: flex;
+                align-items: center;
+            }
+            
             .year-display {
-                min-width: 40px;
+                min-width: 50px;
                 text-align: center;
                 background-color: rgba(255, 255, 255, 0.1);
                 color: var(--accent-color);
                 padding: 3px 8px;
                 border-radius: 10px;
-                font-size: 0.8rem;
-                margin: 0 10px;
+                font-size: 0.9rem;
+                font-weight: bold;
             }
             
-            .min-slider, .max-slider {
-                -webkit-appearance: none;
-                appearance: none;
-                height: 5px;
-                background: rgba(255, 255, 255, 0.2);
-                outline: none;
-                border-radius: 5px;
-                width: 40%;
-                flex-grow: 1;
-                margin: 0 5px;
+            /* Custom noUiSlider Styling */
+            .range-slider {
+                height: 6px;
+                width: 100%;
             }
             
-            .min-slider::-webkit-slider-thumb, .max-slider::-webkit-slider-thumb {
-                -webkit-appearance: none;
-                appearance: none;
-                width: 16px;
-                height: 16px;
-                border-radius: 50%;
-                background: var(--accent-color);
-                cursor: pointer;
-                transition: transform 0.1s ease;
-            }
-            
-            .min-slider::-moz-range-thumb, .max-slider::-moz-range-thumb {
-                width: 16px;
-                height: 16px;
-                border-radius: 50%;
-                background: var(--accent-color);
-                cursor: pointer;
+            .noUi-target {
+                background-color: rgba(255, 255, 255, 0.2);
                 border: none;
-                transition: transform 0.1s ease;
+                border-radius: 3px;
+                box-shadow: none;
+                height: 6px;
             }
             
-            .min-slider::-webkit-slider-thumb:hover, .max-slider::-webkit-slider-thumb:hover {
-                transform: scale(1.1);
+            .noUi-connect {
+                background-color: var(--accent-color);
             }
             
-            .min-slider::-moz-range-thumb:hover, .max-slider::-moz-range-thumb:hover {
+            .noUi-handle {
+                width: 18px !important;
+                height: 18px !important;
+                border-radius: 50%;
+                background-color: var(--accent-color);
+                box-shadow: none;
+                border: 2px solid var(--bg-color);
+                cursor: pointer;
+                right: -9px !important;
+                top: -7px !important;
+            }
+            
+            .noUi-handle:before, .noUi-handle:after {
+                display: none;
+            }
+            
+            .noUi-handle:hover {
                 transform: scale(1.1);
             }
             
             /* Responsive adjustments */
             @media (max-width: 600px) {
                 .year-slider-container {
-                    flex-wrap: wrap;
+                    flex-direction: row;
+                    align-items: center;
                 }
                 
-                .min-slider, .max-slider {
-                    width: 35%;
+                .range-slider-container {
+                    margin: 0 10px;
                 }
                 
                 .year-display {
-                    margin: 0 5px;
-                    min-width: 35px;
+                    min-width: 40px;
+                    font-size: 0.8rem;
+                    padding: 2px 5px;
                 }
             }
         `;
