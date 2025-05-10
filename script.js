@@ -1,5 +1,5 @@
 // Georgian Polyphony Player - Main Script
-// Updated with fixed volume, filter button support, and Media Session API integration
+// Updated with fixed volume, filter button support, Media Session API integration, and album artwork
 
 // DOM Elements
 const audioPlayer = document.getElementById('audio-player');
@@ -42,6 +42,9 @@ let consecutiveErrors = 0; // Count consecutive errors to prevent infinite loops
 const MAX_CONSECUTIVE_ERRORS = 5; // Maximum number of consecutive errors to try before stopping
 let isHandlingSharedTrack = false; // Flag for track sharing functionality
 const FIXED_VOLUME = 0.7; // Fixed volume at 70%
+
+// Default album artwork URL for media session
+const DEFAULT_ALBUM_ARTWORK = 'album-art.jpg'; // This should be placed in the same directory as your web app
 
 // Filter state
 const activeFilters = {
@@ -274,13 +277,22 @@ function showSuccessMessage(message, duration = 3000) {
 // Update media session metadata for lock screen display
 function updateMediaSessionMetadata(track) {
     if ('mediaSession' in navigator) {
+        // Create artwork array with different sizes for different devices
+        const artwork = [
+            { src: DEFAULT_ALBUM_ARTWORK, sizes: '96x96', type: 'image/jpeg' },
+            { src: DEFAULT_ALBUM_ARTWORK, sizes: '128x128', type: 'image/jpeg' },
+            { src: DEFAULT_ALBUM_ARTWORK, sizes: '192x192', type: 'image/jpeg' },
+            { src: DEFAULT_ALBUM_ARTWORK, sizes: '256x256', type: 'image/jpeg' },
+            { src: DEFAULT_ALBUM_ARTWORK, sizes: '384x384', type: 'image/jpeg' },
+            { src: DEFAULT_ALBUM_ARTWORK, sizes: '512x512', type: 'image/jpeg' }
+        ];
+
         // Create metadata object
         navigator.mediaSession.metadata = new MediaMetadata({
             title: track.title || 'Unknown Title',
             artist: track.performers || 'Unknown Performers',
             album: track.collection_name || 'Georgian Polyphony',
-            // If we had artwork, we could add it here with something like:
-            // artwork: [{ src: 'path/to/artwork.jpg', sizes: '512x512', type: 'image/jpeg' }]
+            artwork: artwork
         });
 
         // Add playback control handlers
@@ -1231,6 +1243,9 @@ document.addEventListener('DOMContentLoaded', () => {
     setTimeout(() => {
         populateFilterOptions();
     }, 2000);
+    
+    // Create album artwork if it doesn't exist
+    createAlbumArtwork();
 });
 
 // Special handling for iOS audio playback
@@ -1283,4 +1298,64 @@ function setupIOSAudioHandling() {
             }
         }, { once: true });
     }
+}
+
+// Function to create album artwork dynamically
+function createAlbumArtwork() {
+    // Check if the album artwork already exists
+    if (document.querySelector('link[rel="album-art"]')) {
+        return;
+    }
+    
+    // Create a canvas to generate the album art
+    const canvas = document.createElement('canvas');
+    canvas.width = 512;
+    canvas.height = 512;
+    const ctx = canvas.getContext('2d');
+    
+    // Draw background
+    ctx.fillStyle = '#000000';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    
+    // Draw text
+    ctx.fillStyle = '#e6c200'; // Gold color
+    ctx.font = 'bold 48px Arial';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    
+    // Split text into lines
+    const text = 'Georgian Polyphony Player';
+    const words = text.split(' ');
+    const lineHeight = 60;
+    
+    ctx.fillText(words[0], canvas.width/2, canvas.height/2 - lineHeight);
+    ctx.fillText(words[1], canvas.width/2, canvas.height/2);
+    ctx.fillText(words[2], canvas.width/2, canvas.height/2 + lineHeight);
+    
+    // Convert to data URL
+    const dataUrl = canvas.toDataURL('image/jpeg');
+    
+    // Create a blob and save it as a file
+    const byteString = atob(dataUrl.split(',')[1]);
+    const mimeString = dataUrl.split(',')[0].split(':')[1].split(';')[0];
+    const ab = new ArrayBuffer(byteString.length);
+    const ia = new Uint8Array(ab);
+    
+    for (let i = 0; i < byteString.length; i++) {
+        ia[i] = byteString.charCodeAt(i);
+    }
+    
+    const blob = new Blob([ab], {type: mimeString});
+    const url = URL.createObjectURL(blob);
+    
+    // Create a link to the blob
+    const link = document.createElement('link');
+    link.rel = 'album-art';
+    link.href = url;
+    document.head.appendChild(link);
+    
+    // Update the default album artwork URL
+    DEFAULT_ALBUM_ARTWORK = url;
+    
+    console.log('Album artwork created dynamically');
 }
