@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Generate Album Art</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f5f5f5;
+        }
+        canvas {
+            border: 1px solid #ccc;
+            margin-bottom: 20px;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #e6c200;
+            color: black;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #d2b100;
+        }
+        img {
+            margin-top: 20px;
+            max-width: 512px;
+            max-height: 512px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Georgian Polyphony Player Album Art Generator</h1>
+    <canvas id="albumArtCanvas" width="512" height="512"></canvas>
+    <button id="generateBtn">Generate Album Art</button>
+    <button id="downloadBtn" style="display:none;">Download Album Art</button>
+    <img id="previewImg" style="display:none;">
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const canvas = document.getElementById('albumArtCanvas');
+            const ctx = canvas.getContext('2d');
+            const generateBtn = document.getElementById('generateBtn');
+            const downloadBtn = document.getElementById('downloadBtn');
+            const previewImg = document.getElementById('previewImg');
+            
+            generateBtn.addEventListener('click', generateAlbumArt);
+            downloadBtn.addEventListener('click', downloadAlbumArt);
+            
+            // Generate album art on page load
+            generateAlbumArt();
+            
+            function generateAlbumArt() {
+                // Clear canvas
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                // Draw background
+                ctx.fillStyle = '#000000';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                
+                // Draw text
+                ctx.fillStyle = '#e6c200'; // Gold color
+                ctx.font = 'bold 48px Arial';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                
+                // Split text into lines
+                const text = 'Georgian Polyphony Player';
+                const words = text.split(' ');
+                const lineHeight = 60;
+                
+                ctx.fillText(words[0], canvas.width/2, canvas.height/2 - lineHeight);
+                ctx.fillText(words[1], canvas.width/2, canvas.height/2);
+                ctx.fillText(words[2], canvas.width/2, canvas.height/2 + lineHeight);
+                
+                // Show preview
+                previewImg.src = canvas.toDataURL('image/jpeg');
+                previewImg.style.display = 'block';
+                
+                // Show download button
+                downloadBtn.style.display = 'inline-block';
+            }
+            
+            function downloadAlbumArt() {
+                const dataUrl = canvas.toDataURL('image/jpeg');
+                const link = document.createElement('a');
+                link.download = 'album-art.jpg';
+                link.href = dataUrl;
+                link.click();
+            }
+        });
+    </script>
+</body>
+</html>
