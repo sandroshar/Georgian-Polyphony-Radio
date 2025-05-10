@@ -1,5 +1,5 @@
 // Georgian Polyphony Player - Main Script
-// Updated with fixed volume and filter button support
+// Updated with fixed volume, filter button support, and Media Session API integration
 
 // DOM Elements
 const audioPlayer = document.getElementById('audio-player');
@@ -271,6 +271,50 @@ function showSuccessMessage(message, duration = 3000) {
     }, duration);
 }
 
+// Update media session metadata for lock screen display
+function updateMediaSessionMetadata(track) {
+    if ('mediaSession' in navigator) {
+        // Create metadata object
+        navigator.mediaSession.metadata = new MediaMetadata({
+            title: track.title || 'Unknown Title',
+            artist: track.performers || 'Unknown Performers',
+            album: track.collection_name || 'Georgian Polyphony',
+            // If we had artwork, we could add it here with something like:
+            // artwork: [{ src: 'path/to/artwork.jpg', sizes: '512x512', type: 'image/jpeg' }]
+        });
+
+        // Add playback control handlers
+        navigator.mediaSession.setActionHandler('play', () => {
+            audioPlayer.play();
+            isPlaying = true;
+            updatePlayPauseIcon();
+        });
+        
+        navigator.mediaSession.setActionHandler('pause', () => {
+            audioPlayer.pause();
+            isPlaying = false;
+            updatePlayPauseIcon();
+        });
+        
+        navigator.mediaSession.setActionHandler('previoustrack', () => {
+            playPreviousTrack();
+        });
+        
+        navigator.mediaSession.setActionHandler('nexttrack', () => {
+            skipToNextTrack();
+        });
+        
+        // Update position state if supported
+        if ('setPositionState' in navigator.mediaSession) {
+            navigator.mediaSession.setPositionState({
+                duration: audioPlayer.duration || 0,
+                playbackRate: audioPlayer.playbackRate,
+                position: audioPlayer.currentTime || 0
+            });
+        }
+    }
+}
+
 // Load and play a track
 function loadTrack(index) {
     if (tracks.length === 0) return;
@@ -335,6 +379,9 @@ function loadTrack(index) {
     // Enable/disable navigation buttons
     updateNavigationButtons();
     
+    // Update media session metadata for lock screen
+    updateMediaSessionMetadata(track);
+    
     // Set up error handling
     audioPlayer.onerror = function(e) {
         console.error(`Error loading audio file: ${audioSource}`);
@@ -367,6 +414,15 @@ function loadTrack(index) {
         // Update duration display
         if (audioPlayer.duration) {
             durationDisplay.textContent = formatTime(audioPlayer.duration);
+            
+            // Update position state in media session
+            if ('mediaSession' in navigator && 'setPositionState' in navigator.mediaSession) {
+                navigator.mediaSession.setPositionState({
+                    duration: audioPlayer.duration,
+                    playbackRate: audioPlayer.playbackRate,
+                    position: audioPlayer.currentTime
+                });
+            }
         }
         
         // Try to play automatically if we're in playing state
@@ -525,6 +581,9 @@ function playPreviousTrack() {
             currentTrackDesc.style.display = 'none';
         }
         
+        // Update media session metadata for lock screen
+        updateMediaSessionMetadata(track);
+        
         // Update navigation buttons
         updateNavigationButtons();
         
@@ -549,6 +608,15 @@ function playPreviousTrack() {
             // Update duration display
             if (audioPlayer.duration) {
                 durationDisplay.textContent = formatTime(audioPlayer.duration);
+                
+                // Update position state in media session
+                if ('mediaSession' in navigator && 'setPositionState' in navigator.mediaSession) {
+                    navigator.mediaSession.setPositionState({
+                        duration: audioPlayer.duration,
+                        playbackRate: audioPlayer.playbackRate,
+                        position: audioPlayer.currentTime
+                    });
+                }
             }
             
             if (isPlaying) {
@@ -1119,6 +1187,22 @@ progressSlider.addEventListener('change', function() {
 
 // Audio player event listeners
 audioPlayer.addEventListener('timeupdate', updateProgress);
+audioPlayer.addEventListener('timeupdate', function() {
+    // Update position state in media session if available
+    if ('mediaSession' in navigator && 'setPositionState' in navigator.mediaSession) {
+        try {
+            navigator.mediaSession.setPositionState({
+                duration: audioPlayer.duration || 0,
+                playbackRate: audioPlayer.playbackRate,
+                position: audioPlayer.currentTime || 0
+            });
+        } catch (e) {
+            // Some browsers might throw errors if the media session isn't fully supported
+            console.warn('Error updating media session position state:', e);
+        }
+    }
+});
+
 audioPlayer.addEventListener('ended', skipToNextTrack);
 
 // Search when Enter key is pressed in search input
