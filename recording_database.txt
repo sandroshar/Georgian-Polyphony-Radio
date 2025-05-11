@@ -469,7 +469,7 @@
 | col_10_track_308 | col_10 | Isaia mkhiarul iqav! | 070. GURIA. VANI. Isaia mkhiarul iqav!.mp3 | გრიმო/CD1/070. GURIA. VANI. Isaia mkhiarul iqav!.mp3 | Folk ensemble of Vani directed by Shalva Makharadze | 1967 | GURIA |
 | col_10_track_309 | col_10 | Mghvdelo, batono | 094. LECHKHUMI. CHKHUTELI. Mghvdelo, batono.mp3 | გრიმო/CD1/094. LECHKHUMI. CHKHUTELI. Mghvdelo, batono.mp3 | Folk choir of the collective farm Ganatleba | 1967 | LECHKHUMI |
 | col_10_track_310 | col_10 | Vakhtanguri | 028. GURIA. MAKHARADZE. Vakhtanguri.mp3 | გრიმო/CD1/028. GURIA. MAKHARADZE. Vakhtanguri.mp3 | Trio: Varlam Vashalomidze, Ilarion Sikharulidze, and Shermadin Chkuaseli | 1967 | GURIA |
-| col_10_track_311 | col_10 | Chven – mshvidoba | 026. GURIA. MAKHARADZE. Chven – mshvidoba.mp3 | გრიმო/CD1/026. GURIA. MAKHARADZE. Chven – mshvidoba.mp3 | Dila Ensemble of the Makharadze House of Culture | 1967 | GURIA |
+| col_10_track_311 | col_10 | Chven Mshvidoba | 026. GURIA. MAKHARADZE. Chven – mshvidoba.mp3 | გრიმო/CD1/026. GURIA. MAKHARADZE. Chven – mshvidoba.mp3 | Dila Ensemble of the Makharadze House of Culture | 1967 | GURIA |
 | col_10_track_312 | col_10 | Naduri | 062. GURIA. ZEMO SUREBI. Naduri.mp3 | გრიმო/CD1/062. GURIA. ZEMO SUREBI. Naduri.mp3 | A group of folk singers | 1967 | GURIA |
 | col_10_track_313 | col_10 | Gakhsovs turpav | 051. GURIA. GUTURI. Gakhsovs turpav.mp3 | გრიმო/CD1/051. GURIA. GUTURI. Gakhsovs turpav.mp3 | Family of a folk singer Vano Giorgadze | 1967 | GURIA |
 | col_10_track_314 | col_10 | Alipasha | 024. ACHARA. TSKHAVROKA. Alipasha.mp3 | გრიმო/CD1/024. ACHARA. TSKHAVROKA. Alipasha.mp3 | Choir of collective farmers from the villages of Tskavroka and Kakuti | 1967 | ACHARA |
