@@ -3,7 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Georgian Polyphony Player</title>
+    <title id="page-title">Georgian Polyphony Player</title>
+    <meta property="og:title" content="Georgian Polyphony Player">
+    <meta property="og:description" content="Legendary historical recordings of Georgian traditional music">
+    <meta property="og:type" content="music.song">
+    <meta property="og:site_name" content="Georgian Polyphony Radio">
+    <meta name="twitter:card" content="summary_large_image">
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -26,16 +31,13 @@
             <button id="clear-search-btn" class="clear-btn">Clear</button>
         </div>
 
-        <!-- Filter Panel (initially hidden) -->
         <div id="filter-panel" class="filter-panel">
             <h3>Filter by Region</h3>
             <div class="filter-options" id="region-filters">
-                <!-- Filter options will be added here dynamically -->
-            </div>
+                </div>
             
             <div id="year-range-container">
-                <!-- Year range slider will be added here dynamically -->
-            </div>
+                </div>
             
             <div class="filter-actions">
                 <button id="apply-filters-btn" class="btn">Apply Filters</button>
@@ -59,7 +61,6 @@
                 <p id="current-track-description" class="track-description"></p>
             </div>
 
-            <!-- Progress slider -->
             <div class="progress-container">
                 <span id="current-time">0:00</span>
                 <input type="range" min="0" max="100" value="0" id="progress-slider" class="progress-slider">
@@ -103,27 +104,20 @@
 
     <audio id="audio-player"></audio>
     
-    <!-- Hidden album artwork for media session -->
     <div style="display:none;">
         <img id="album-art" src="album-art.jpg" alt="Georgian Polyphony Player">
     </div>
     
-    <!-- Include the improved track loader first -->
     <script src="track-loader.js"></script>
     
-    <!-- Then include the debug helper if needed -->
     <script src="debug-helper.js"></script>
     
-    <!-- Then include the main script -->
     <script src="script.js"></script>
     
-    <!-- Include the filter functionality -->
     <script src="filter-tracks.js"></script>
     
-    <!-- Include the sharing functionality -->
     <script src="share-tracks.js"></script>
     
-    <!-- Add the slider color fix script -->
     <script src="slider-color-fix.js"></script>
 </body>
 </html>
