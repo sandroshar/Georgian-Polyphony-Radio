@@ -108,14 +108,10 @@
         
         console.log("Sharing track:", currentTrack.title, "ID:", currentTrack.id);
         
-        // Create the shareable URL with the track ID
+        // Create the shareable URL (uses a pre-rendered HTML page so link previews show track metadata)
         const url = new URL(window.location.href);
-        // Clear any existing parameters
-        url.search = '';
-        // Add the track ID parameter
-        url.searchParams.set('track', currentTrack.id);
-        
-        const shareUrl = url.toString();
+        const basePath = url.pathname.endsWith('/') ? url.pathname : url.pathname.substring(0, url.pathname.lastIndexOf('/') + 1);
+        const shareUrl = url.origin + basePath + 't/' + encodeURIComponent(currentTrack.id) + '.html';
         console.log("Share URL:", shareUrl);
         
         // Try to use clipboard API
