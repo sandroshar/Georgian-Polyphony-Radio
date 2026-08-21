@@ -16,11 +16,9 @@ const path = require('path');
 const DB_PATH = path.join(__dirname, 'recording_database.txt');
 const OUT_DIR = path.join(__dirname, 't');
 
-// IMPORTANT: Set this to your real deployed URL (must end with a slash).
-// Examples:
-//   https://yourdomain.com/
-//   https://username.github.io/repo/
-const BASE_URL = (process.env.BASE_URL || '').trim();
+// Defaults to the real production domain; override with the env var if
+// generating pages for a staging URL instead.
+const BASE_URL = (process.env.BASE_URL || 'https://georgianpolyphonyplayer.com/').trim();
 
 const SITE_NAME = 'Georgian Polyphony Player';
 const DEFAULT_DESC = 'Legendary historical recordings of Georgian traditional music';
@@ -82,7 +80,7 @@ function buildPage(track) {
   const appPath = '?track=' + encodeURIComponent(track.id);
 
   const ogUrl = makeAbsoluteOrRelative(sharePath);
-  const ogImage = makeAbsoluteOrRelative('album-art.jpg');
+  const ogImage = makeAbsoluteOrRelative('og-image.png');
 
   const fullTitle = `${track.title} — ${track.performers}`;
 
