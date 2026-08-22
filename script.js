@@ -1268,8 +1268,8 @@ function setupIOSAudioHandling() {
         const iosNotice = document.createElement('div');
         iosNotice.className = 'audio-info';
         iosNotice.textContent = 'Tap anywhere on the page to enable audio playback';
-        iosNotice.style.backgroundColor = 'rgba(230, 194, 0, 0.2)';
-        iosNotice.style.color = '#e6c200';
+        iosNotice.style.backgroundColor = 'rgba(92, 26, 5, 0.2)';
+        iosNotice.style.color = '#5c1a05';
         iosNotice.style.padding = '10px';
         iosNotice.style.borderRadius = '5px';
         iosNotice.style.margin = '15px 0';
