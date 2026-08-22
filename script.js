@@ -355,21 +355,6 @@ function loadTrack(index) {
     
     const track = tracks[index];
 
-    // UPDATED: Update Page Metadata for Shared Link Previews
-    const songTitle = track.title || 'Unknown Title';
-    const performer = track.performers || 'Unknown Performers';
-    const pageDisplayTitle = `${songTitle} - ${performer} | Georgian Polyphony Player`;
-    
-    // Update tab title
-    document.title = pageDisplayTitle;
-    
-    // Update Open Graph tags for link previews
-    updateMetaTag('og:title', pageDisplayTitle);
-    updateMetaTag('twitter:title', pageDisplayTitle);
-    if (track.collection_name) {
-        updateMetaTag('og:description', `From collection: ${track.collection_name}`);
-    }
-    
     // Prepare audio source
     const audioSource = track.audioUrl;
     if (!audioSource) {
@@ -1384,18 +1369,3 @@ function createAlbumArtwork() {
     console.log('Album artwork created dynamically');
 }
 
-// Helper function to update or create meta tags for link previews
-function updateMetaTag(property, content) {
-    let element = document.querySelector(`meta[property="${property}"]`) || 
-                  document.querySelector(`meta[name="${property}"]`);
-    if (!element) {
-        element = document.createElement('meta');
-        if (property.startsWith('og:')) {
-            element.setAttribute('property', property);
-        } else {
-            element.setAttribute('name', property);
-        }
-        document.head.appendChild(element);
-    }
-    element.setAttribute('content', content);
-}
