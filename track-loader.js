@@ -1,5 +1,24 @@
 // track-loader.js with Anania Erkomaishvili special handling removed
 
+// Georgian (Mkhedruli) -> Latin transliteration, matching the romanization
+// already used throughout recording_database.txt (e.g. ხ->kh, ღ->gh, ყ->q,
+// ძ->dz, ჟ->zh, წ/ც->ts, ჩ/ჭ->ch). Georgian->Latin is unambiguous here even
+// though the reverse isn't (several distinct Georgian letters share a Latin
+// digraph), which is exactly why this direction works for search.
+const GEORGIAN_TO_LATIN = {
+    'ა': 'a', 'ბ': 'b', 'გ': 'g', 'დ': 'd', 'ე': 'e', 'ვ': 'v', 'ზ': 'z',
+    'თ': 't', 'ი': 'i', 'კ': 'k', 'ლ': 'l', 'მ': 'm', 'ნ': 'n', 'ო': 'o',
+    'პ': 'p', 'ჟ': 'zh', 'რ': 'r', 'ს': 's', 'ტ': 't', 'უ': 'u', 'ფ': 'p',
+    'ქ': 'k', 'ღ': 'gh', 'ყ': 'q', 'შ': 'sh', 'ჩ': 'ch', 'ც': 'ts',
+    'ძ': 'dz', 'წ': 'ts', 'ჭ': 'ch', 'ხ': 'kh', 'ჯ': 'j', 'ჰ': 'h'
+};
+
+const GEORGIAN_LETTERS_PATTERN = /[Ⴀ-ჿ]/;
+
+function transliterateGeorgianToLatin(text) {
+    return text.split('').map(ch => GEORGIAN_TO_LATIN[ch] || ch).join('');
+}
+
 class TrackLoader {
     constructor() {
         this.tracks = [];
@@ -449,13 +468,18 @@ class TrackLoader {
         return shuffled;
     }
     
-    // Search tracks by title, performers, or collection
+    // Search tracks by title, performers, or collection. Accepts Georgian
+    // script too - it's transliterated to Latin before matching, since the
+    // database only stores titles/performers as Latin transliterations.
     searchTracks(query) {
         if (!query || query.trim() === '') {
             return [];
         }
-        
-        const normalizedQuery = query.toLowerCase().trim();
+
+        const searchQuery = GEORGIAN_LETTERS_PATTERN.test(query)
+            ? transliterateGeorgianToLatin(query)
+            : query;
+        const normalizedQuery = searchQuery.toLowerCase().trim();
         
         return this.tracks.filter(track => {
             const title = (track.title || '').toLowerCase();
