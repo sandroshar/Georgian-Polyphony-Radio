@@ -43,8 +43,7 @@ const DEFAULT_DESC = 'Legendary historical recordings of Georgian traditional mu
 // from t/<id>.html.
 const ROOT_RELATIVE_ASSETS = [
   'styles.css', 'track-loader.js', 'debug-helper.js', 'script.js',
-  'filter-tracks.js', 'share-tracks.js', 'slider-color-fix.js',
-  'album-art.jpg'
+  'filter-tracks.js', 'share-tracks.js', 'slider-color-fix.js'
 ];
 
 // Well-known, recurring Georgian folk-song/genre terms whose standard
