@@ -7,7 +7,19 @@
     
     // Flag to prevent duplicate loading
     let isInitialized = false;
-    
+
+    // Computed once, before any URL rewriting happens, so later share/copy
+    // actions always resolve relative to the real app location (not to a
+    // previously-rewritten /t/<id>.html address).
+    const SITE_BASE_PATH = (function() {
+        const pathname = window.location.pathname;
+        return pathname.endsWith('/') ? pathname : pathname.substring(0, pathname.lastIndexOf('/') + 1);
+    })();
+
+    function buildShareUrl(trackId) {
+        return window.location.origin + SITE_BASE_PATH + 't/' + encodeURIComponent(trackId) + '.html';
+    }
+
     // Wait for window globals to be available
     let checkForAppReady = setInterval(() => {
         // Check if key variables and functions exist
@@ -56,14 +68,9 @@
         // Create the button
         const shareBtn = document.createElement('button');
         shareBtn.id = 'share-btn';
-        shareBtn.className = 'nav-btn share-btn'; // Update to use nav-btn class instead of custom share-btn
+        shareBtn.className = 'share-btn';
         shareBtn.title = 'Copy link to this track';
-        shareBtn.innerHTML = `
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
-                <path fill="none" d="M0 0h24v24H0z"/>
-                <path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z" fill="currentColor"/>
-            </svg>
-        `;
+        shareBtn.textContent = 'Share';
         
         // Add the button to controls
         const controlsContainer = document.querySelector('.controls');
@@ -109,9 +116,7 @@
         console.log("Sharing track:", currentTrack.title, "ID:", currentTrack.id);
         
         // Create the shareable URL (uses a pre-rendered HTML page so link previews show track metadata)
-        const url = new URL(window.location.href);
-        const basePath = url.pathname.endsWith('/') ? url.pathname : url.pathname.substring(0, url.pathname.lastIndexOf('/') + 1);
-        const shareUrl = url.origin + basePath + 't/' + encodeURIComponent(currentTrack.id) + '.html';
+        const shareUrl = buildShareUrl(currentTrack.id);
         console.log("Share URL:", shareUrl);
         
         // Try to use clipboard API
@@ -175,14 +180,16 @@
         }
     }
     
-    // Update URL with track ID
+    // Update the address bar to the same static share-page URL the Share
+    // button copies, so directly copying the URL bar also previews with the
+    // track's title/performer/thumbnail (crawlers don't run this page's JS,
+    // so a ?track= query string alone won't show track-specific previews).
     function updateUrlWithTrackId(trackId) {
-        const url = new URL(window.location.href);
-        url.searchParams.set('track', trackId);
-        
+        const shareUrl = buildShareUrl(trackId);
+
         // Replace current URL without reloading the page
         try {
-            window.history.replaceState({}, '', url.toString());
+            window.history.replaceState({}, '', shareUrl);
             console.log("URL updated with track ID:", trackId);
         } catch (e) {
             console.error("Error updating URL:", e);
@@ -449,14 +456,10 @@
             /* Responsive adjustments */
             @media (max-width: 600px) {
                 .share-btn {
-                    width: 35px;
-                    height: 35px;
+                    height: 36px;
+                    padding: 0 14px;
+                    font-size: 0.9rem;
                     margin-right: 10px;
-                }
-                
-                .share-btn svg {
-                    width: 18px;
-                    height: 18px;
                 }
             }
         `;

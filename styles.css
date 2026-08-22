@@ -269,6 +269,23 @@ button:disabled {
     transform: scale(0.95);
 }
 
+/* Share button stands out from the round transport icons: a labeled gold pill */
+.share-btn {
+    width: auto;
+    height: 40px;
+    padding: 0 20px;
+    border-radius: 20px;
+    background-color: var(--accent-color);
+    color: #000000;
+    font-weight: 700;
+    font-size: 1rem;
+    white-space: nowrap;
+}
+
+.share-btn:hover:not(:disabled) {
+    background-color: #f2d94e;
+}
+
 /* Filter panel styles */
 .filter-panel {
     background-color: var(--filter-panel-bg);

@@ -43,6 +43,13 @@ const MAX_CONSECUTIVE_ERRORS = 5; // Maximum number of consecutive errors to try
 let isHandlingSharedTrack = false; // Flag for track sharing functionality
 const FIXED_VOLUME = 0.7; // Fixed volume at 70%
 
+// Computed once at load, before any URL rewriting happens, so URL updates
+// always resolve relative to the real app location.
+const SITE_BASE_PATH = (function() {
+    const pathname = window.location.pathname;
+    return pathname.endsWith('/') ? pathname : pathname.substring(0, pathname.lastIndexOf('/') + 1);
+})();
+
 // Default album artwork URL for media session
 const DEFAULT_ALBUM_ARTWORK = 'album-art.jpg'; // This should be placed in the same directory as your web app
 
@@ -506,14 +513,16 @@ function loadTrack(index) {
     }
 }
 
-// Helper function to update URL with track ID
+// Helper function to update URL with track ID. Points at the same static
+// /t/<id>.html share page used by the Share button (rather than a ?track=
+// query string) so directly copying the address bar also previews with the
+// track's title/performer/thumbnail - crawlers don't run this page's JS.
 function updateUrlWithTrackId(trackId) {
-    const url = new URL(window.location.href);
-    url.searchParams.set('track', trackId);
-    
+    const shareUrl = window.location.origin + SITE_BASE_PATH + 't/' + encodeURIComponent(trackId) + '.html';
+
     // Replace current URL without reloading the page
     try {
-        window.history.replaceState({}, '', url.toString());
+        window.history.replaceState({}, '', shareUrl);
         console.log("URL updated with track ID:", trackId);
     } catch (e) {
         console.error("Error updating URL:", e);
