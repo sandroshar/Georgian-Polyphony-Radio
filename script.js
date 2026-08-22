@@ -44,9 +44,16 @@ let isHandlingSharedTrack = false; // Flag for track sharing functionality
 const FIXED_VOLUME = 0.7; // Fixed volume at 70%
 
 // Computed once at load, before any URL rewriting happens, so URL updates
-// always resolve relative to the real app location.
+// always resolve relative to the real app location. The app can boot
+// directly from a per-track page at /t/<id>.html (same app, one directory
+// down), so resolve back to the real site root in that case instead of
+// treating t/ as the root.
 const SITE_BASE_PATH = (function() {
     const pathname = window.location.pathname;
+    const trackPageMatch = pathname.match(/^(.*\/)t\/[^\/]+\.html$/);
+    if (trackPageMatch) {
+        return trackPageMatch[1];
+    }
     return pathname.endsWith('/') ? pathname : pathname.substring(0, pathname.lastIndexOf('/') + 1);
 })();
 
@@ -1068,9 +1075,12 @@ async function initializeApp() {
     setLoading(true);
     
     try {
-        // Check for shared track ID in URL
+        // Check for shared track ID in URL, or baked into a per-track page
+        // (window.STARTUP_TRACK_ID, set by generate-share-pages.js) for
+        // pages that have no query string at all.
         const urlParams = new URLSearchParams(window.location.search);
-        const sharedTrackId = urlParams.get('track');
+        const sharedTrackId = urlParams.get('track') ||
+            (typeof window.STARTUP_TRACK_ID !== 'undefined' ? window.STARTUP_TRACK_ID : null);
         
         if (sharedTrackId) {
             console.log('Found shared track ID in URL:', sharedTrackId);

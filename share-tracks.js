@@ -10,9 +10,15 @@
 
     // Computed once, before any URL rewriting happens, so later share/copy
     // actions always resolve relative to the real app location (not to a
-    // previously-rewritten /t/<id>.html address).
+    // previously-rewritten /t/<id>.html address). The app can also boot
+    // directly from a per-track page at /t/<id>.html, so resolve back to
+    // the real site root in that case instead of treating t/ as the root.
     const SITE_BASE_PATH = (function() {
         const pathname = window.location.pathname;
+        const trackPageMatch = pathname.match(/^(.*\/)t\/[^\/]+\.html$/);
+        if (trackPageMatch) {
+            return trackPageMatch[1];
+        }
         return pathname.endsWith('/') ? pathname : pathname.substring(0, pathname.lastIndexOf('/') + 1);
     })();
 

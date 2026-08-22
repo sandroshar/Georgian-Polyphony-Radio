@@ -26,8 +26,9 @@ class TrackLoader {
     // Load the database from the text file
     async loadDatabaseFromText() {
         try {
-            // Fetch the database file
-            const response = await fetch('recording_database.txt');
+            // Fetch the database file (root-relative so it also resolves
+            // correctly from per-track pages under /t/)
+            const response = await fetch('/recording_database.txt');
             const text = await response.text();
             
             // Parse the database
