@@ -1,4 +1,4 @@
-// slider-color-fix.js - Force the slider elements to use the accent color
+// slider-color-fix.js - Force the slider elements to use the gold accent color
 // This file fixes the blue slider color issue by applying high-specificity CSS rules
 
 (function() {
