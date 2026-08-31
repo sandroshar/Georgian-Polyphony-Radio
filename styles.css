@@ -236,8 +236,8 @@ button:disabled {
     width: auto;
     padding: 8px 15px;
     border-radius: 20px;
-    background-color: color-mix(in srgb, var(--accent-color) 18%, transparent);
-    color: var(--text-color);
+    background-color: rgba(255, 255, 255, 0.1);
+    color: var(--accent-color);
     white-space: nowrap;
     display: flex;
     align-items: center;
@@ -247,7 +247,8 @@ button:disabled {
 
 .filter-btn:hover:not(:disabled),
 .filter-btn.active {
-    background-color: color-mix(in srgb, var(--accent-color) 30%, transparent);
+    background-color: var(--accent-color);
+    color: #000;
 }
 
 /* Filter indicator */
@@ -270,18 +271,19 @@ button:disabled {
     transform: scale(0.95);
 }
 
-/* Share button: a labeled pill, styled like the search/clear buttons with a soft color tint */
+/* Share button: styled like the search/clear buttons, with just the label colored */
 .share-btn {
     width: auto;
     padding: 8px 15px;
     border-radius: 20px;
-    background-color: color-mix(in srgb, var(--accent-color) 18%, transparent);
-    color: var(--text-color);
+    background-color: rgba(255, 255, 255, 0.1);
+    color: var(--accent-color);
     white-space: nowrap;
 }
 
 .share-btn:hover:not(:disabled) {
-    background-color: color-mix(in srgb, var(--accent-color) 30%, transparent);
+    background-color: var(--accent-color);
+    color: #000;
 }
 
 /* Filter panel styles */
