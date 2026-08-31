@@ -233,10 +233,15 @@ button:disabled {
 }
 
 .filter-btn {
-    width: 40px;
+    width: auto;
     height: 40px;
-    border-radius: 50%;
-    background-color: rgba(255, 255, 255, 0.1);
+    padding: 0 18px;
+    border-radius: 20px;
+    background-color: var(--accent-color);
+    color: #000;
+    font-weight: 700;
+    font-size: 1rem;
+    white-space: nowrap;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -245,8 +250,7 @@ button:disabled {
 
 .filter-btn:hover:not(:disabled),
 .filter-btn.active {
-    background-color: var(--accent-color);
-    color: #000;
+    background-color: #f2d94e;
 }
 
 /* Filter indicator */
