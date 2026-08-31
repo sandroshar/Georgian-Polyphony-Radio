@@ -234,13 +234,10 @@ button:disabled {
 
 .filter-btn {
     width: auto;
-    height: 40px;
-    padding: 0 18px;
+    padding: 8px 15px;
     border-radius: 20px;
-    background-color: var(--accent-color);
-    color: #000;
-    font-weight: 700;
-    font-size: 1rem;
+    background-color: color-mix(in srgb, var(--accent-color) 18%, transparent);
+    color: var(--text-color);
     white-space: nowrap;
     display: flex;
     align-items: center;
@@ -250,7 +247,7 @@ button:disabled {
 
 .filter-btn:hover:not(:disabled),
 .filter-btn.active {
-    background-color: #f2d94e;
+    background-color: color-mix(in srgb, var(--accent-color) 30%, transparent);
 }
 
 /* Filter indicator */
@@ -273,21 +270,18 @@ button:disabled {
     transform: scale(0.95);
 }
 
-/* Share button stands out from the round transport icons: a labeled gold pill */
+/* Share button: a labeled pill, styled like the search/clear buttons with a soft color tint */
 .share-btn {
     width: auto;
-    height: 40px;
-    padding: 0 20px;
+    padding: 8px 15px;
     border-radius: 20px;
-    background-color: var(--accent-color);
-    color: #000000;
-    font-weight: 700;
-    font-size: 1rem;
+    background-color: color-mix(in srgb, var(--accent-color) 18%, transparent);
+    color: var(--text-color);
     white-space: nowrap;
 }
 
 .share-btn:hover:not(:disabled) {
-    background-color: #f2d94e;
+    background-color: color-mix(in srgb, var(--accent-color) 30%, transparent);
 }
 
 /* Filter panel styles */

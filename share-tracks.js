@@ -462,9 +462,7 @@
             /* Responsive adjustments */
             @media (max-width: 600px) {
                 .share-btn {
-                    height: 36px;
-                    padding: 0 14px;
-                    font-size: 0.9rem;
+                    padding: 6px 12px;
                     margin-right: 10px;
                 }
             }
