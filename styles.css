@@ -215,7 +215,7 @@ button:disabled {
     cursor: not-allowed;
 }
 
-.play-btn, .mute-btn, .nav-btn, .share-btn {
+.play-btn, .nav-btn, .share-btn {
     width: 50px;
     height: 50px;
     border-radius: 50%;
@@ -225,8 +225,7 @@ button:disabled {
     justify-content: center;
 }
 
-.play-btn:hover:not(:disabled), 
-.mute-btn:hover:not(:disabled), 
+.play-btn:hover:not(:disabled),
 .nav-btn:hover:not(:disabled),
 .share-btn:hover:not(:disabled) {
     background-color: var(--button-hover);
