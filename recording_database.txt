@@ -85,19 +85,19 @@
 | col_4_track_6 | Apshilavebi | Vito Jiri | Apshilavebi_-_Vito_Jiri.mp3 | Apshilavebi/Apshilavebi_-_Vito_Jiri.mp3 | Ilia Apshilava (first voice), Leo Apshilava (second voice), Amiran Apshilava (bass) | unknown | Samegrelo |
 | Track ID | Collection Name | Track Name | Filename | Filepath | Performers | Year | Region |
 |----------|---------------|------------|----------|----------|------------|------|--------|
-| col_5_track_9 | Samuel Chavleishvili | Mokle Mravalzhamieri | Chavleishvili_-_Mokle_Mravaljamieri.mp3 | Samuel Chavleishvili/Chavleishvili_-_Mokle_Mravaljamieri.mp3 | Samuel Chavleishvili | unknown | Guria |
+| col_5_track_9 | Samuel Chavleishvili | Mokle Mravalzhamieri | Chavleishvili_-_Mokle_Mravaljamieri.mp3 | Samuel Chavleishvili/Chavleishvili_-_Mokle_Mravaljamieri.mp3 | Samuel Chavleishvili | 1909 | Guria |
 | col_5_track_12 | Samuel Chavleishvili | Shvidkatsa | Chavleishvili_-_Shvidkaca.mp3 | Samuel Chavleishvili/Chavleishvili_-_Shvidkaca.mp3 | Samuel Chavleishvili | 1909 | Guria |
 | col_5_track_8 | Samuel Chavleishvili | Tsamokruli | Chavleishvili_-_Tsamokruli.mp3 | Samuel Chavleishvili/Chavleishvili_-_Tsamokruli.mp3 | Samuel Chavleishvili, Besarion Intskirveli, Varlam Simonishvili | 1909 | Guria |
 | col_5_track_4 | Samuel Chavleishvili | Alaverdi | Chavleishvili_-_Alaverdi.mp3 | Samuel Chavleishvili/Chavleishvili_-_Alaverdi.mp3 | Samuel Chavleishvili | 1909 | Guria |
-| col_5_track_1 | Samuel Chavleishvili | Brevalo | Chavleishvili_-_Brevalo.mp3 | Samuel Chavleishvili/Chavleishvili_-_Brevalo.mp3 | Samuel Chavleishvili | unknown | Guria |
+| col_5_track_1 | Samuel Chavleishvili | Brevalo | Chavleishvili_-_Brevalo.mp3 | Samuel Chavleishvili/Chavleishvili_-_Brevalo.mp3 | Samuel Chavleishvili | 1909 | Guria |
 | col_5_track_13 | Samuel Chavleishvili | Chven Mshvidoba | Chavleishvili_-_Chven_Mshvidoba.mp3 | Samuel Chavleishvili/Chavleishvili_-_Chven_Mshvidoba.mp3 | Samuel Chavleishvili, Samuel Chkhikvishvili, Varlam Simonishvili | 1909 | Guria |
-| col_5_track_11 | Samuel Chavleishvili | Gigini | Chavleishvili_-_Gigini.mp3 | Samuel Chavleishvili/Chavleishvili_-_Gigini.mp3 | Samuel Chavleishvili | unknown | Guria |
-| col_5_track_7 | Samuel Chavleishvili | Lataria | Chavleishvili_-_Lataria.mp3 | Samuel Chavleishvili/Chavleishvili_-_Lataria.mp3 | Samuel Chavleishvili | unknown | Guria |
-| col_5_track_6 | Samuel Chavleishvili | Me Rustveli | Chavleishvili_-_Me_Rustveli.mp3 | Samuel Chavleishvili/Chavleishvili_-_Me_Rustveli.mp3 | Samuel Chavleishvili, Ilarion Chavleishvili | unknown | Guria |
-| col_5_track_3 | Samuel Chavleishvili | Mgzavruli | Chavleishvili_-_Mgzavruli.mp3 | Samuel Chavleishvili/Chavleishvili_-_Mgzavruli.mp3 | Samuel Chavleishvili | unknown | Guria |
+| col_5_track_11 | Samuel Chavleishvili | Gigini | Chavleishvili_-_Gigini.mp3 | Samuel Chavleishvili/Chavleishvili_-_Gigini.mp3 | Samuel Chavleishvili | 1909 | Guria |
+| col_5_track_7 | Samuel Chavleishvili | Lataria | Chavleishvili_-_Lataria.mp3 | Samuel Chavleishvili/Chavleishvili_-_Lataria.mp3 | Samuel Chavleishvili | 1909 | Guria |
+| col_5_track_6 | Samuel Chavleishvili | Me Rustveli | Chavleishvili_-_Me_Rustveli.mp3 | Samuel Chavleishvili/Chavleishvili_-_Me_Rustveli.mp3 | Samuel Chavleishvili, Ilarion Chavleishvili | 1909 | Guria |
+| col_5_track_3 | Samuel Chavleishvili | Mgzavruli | Chavleishvili_-_Mgzavruli.mp3 | Samuel Chavleishvili/Chavleishvili_-_Mgzavruli.mp3 | Samuel Chavleishvili | 1909 | Guria |
 | col_5_track_5 | Samuel Chavleishvili | Shen Romelman Gananatle | Chavleishvili_-_Shen_Romelman_Gananatle.mp3 | Samuel Chavleishvili/Chavleishvili_-_Shen_Romelman_Gananatle.mp3 | Samuel Chavleishvili | 1909 | Guria |
 | col_5_track_10 | Samuel Chavleishvili | Supris Khelkhvavi | Chavleishvili_-_Supris_Khelkhvavi.mp3 | Samuel Chavleishvili/Chavleishvili_-_Supris_Khelkhvavi.mp3 | Samuel Chavleishvili, Besarion Intskirveli, Varlam Simonishvili | 1909 | Guria |
-| col_5_track_2 | Samuel Chavleishvili | Svanetshi Natkvami Simgera | Chavleishvili_-_Svanetshi_Natkvami_Simgera.mp3 | Samuel Chavleishvili/Chavleishvili_-_Svanetshi_Natkvami_Simgera.mp3 | Samuel Chavleishvili | unknown | Guria |
+| col_5_track_2 | Samuel Chavleishvili | Svanetshi Natkvami Simgera | Chavleishvili_-_Svanetshi_Natkvami_Simgera.mp3 | Samuel Chavleishvili/Chavleishvili_-_Svanetshi_Natkvami_Simgera.mp3 | Samuel Chavleishvili | 1909 | Guria |
 | Track ID | Collection Name | Track Name | Filename | Filepath | Performers | Year | Region |
 |----------|---------------|------------|----------|----------|------------|------|--------|
 | col_6_track_3 | ჯოკია მეშველიანის გუნდი | Alilo | Meshveliani_-_Alilo.mp3 | ჯოკია მეშველიანის გუნდი/Meshveliani_-_Alilo.mp3 | Jokia Meshveliani's Ensemble | Unknown | Svaneti |
